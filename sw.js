@@ -1,12 +1,12 @@
 /* Paskle service worker: makes practice work offline.
    App files and fonts are saved on install; language files are saved the first time they load.
    Bump VERSION whenever any file changes, so phones pick up the new version. */
-const VERSION = "paskle-2026-10-21i";
+const VERSION = "paskle-2026-10-21j";
 const CORE = [
   "./", "index.html", "manifest.webmanifest",
   "data/hha-a.js", "data/hha-b.js", "data/hha-c.js", "data/hha-d.js", "data/hha-map.js",
   "data/cna-a.js", "data/ma-cna.js", "data/permit-a.js",
-  "icons/icon-192.png", "icons/icon-512.png", "icons/icon-maskable-512.png",
+  "icons/icon.svg", "icons/icon-192.png", "icons/icon-512.png", "icons/icon-maskable-512.png",
   "fonts/atkinson-hyperlegible-latin-400-normal.woff2", "fonts/atkinson-hyperlegible-latin-700-normal.woff2", "fonts/source-serif-4-latin-opsz-normal.woff2"
 ];
 

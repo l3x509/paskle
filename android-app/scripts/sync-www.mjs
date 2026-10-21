@@ -7,7 +7,7 @@ const root = path.resolve(here, "..", "..");
 const www = path.resolve(here, "..", "www");
 rmSync(www, { recursive: true, force: true });
 mkdirSync(www);
-for (const f of ["index.html", "sw.js", "manifest.webmanifest", "privacy.html", "data", "icons", "fonts"]) {
+for (const f of ["index.html", "sw.js", "manifest.webmanifest", "privacy.html", "data", "icons", "fonts", "brand"]) {
   cpSync(path.join(root, f), path.join(www, f), { recursive: true });
 }
 console.log("Copied the web app into", www);

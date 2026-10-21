@@ -37,11 +37,11 @@ Let Play App Signing manage the app signing key (the default). Your keystore the
 
 ## Icons and splash screen
 
-Source art is in `assets/` and is drawn by `scripts/make-art.py`. To regenerate the Android icon and splash files after changing it:
+The logo (the k in Paskle drawn as a key) and all icons, splash screens and store graphics are drawn by `tools/make_brand.py` in the repo root. After changing the logo:
 
 ```
-python3 scripts/make-art.py
-npm run icons
+python3 tools/make_brand.py     # from the repo root
+cd android-app && npm run icons # rebuild the Android icon and splash files
 ```
 
 ## Before you submit

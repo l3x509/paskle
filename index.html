@@ -1,0 +1,1151 @@
+<!doctype html>
+<html lang="ht">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#13213D">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>Paskle</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&display=swap">
+<style>
+/* Paskle look: navy and brass (a cousin of ClearImmi, not a copy).
+   One signature device: the pass line, a brass tick at the passing score on every progress bar.
+   Titles: Source Serif 4. Everything people read while studying: Atkinson Hyperlegible. */
+:root{
+  --navy:#13213D; --navy-2:#1C2E52; --on-navy:#F2F5FB; --on-navy-2:#B9C4DB;
+  --brass:#E3A83A; --brass-ink:#13213D; --brass-text:#8A5800; --brass-soft:#FBF0D9;
+  --bg:#F2F5FA; --surface:#FFFFFF; --fg:#16213A; --muted:#55607A; --line:#D8DEEA;
+  --accent:#1F3F7A; --accent-soft:#E6ECF7; --accent-ink:#FFFFFF;
+  --fill:#4C6CA6; --track:#E1E7F1;
+  --ok:#17784F; --ok-bg:#E2F3EA; --bad:#B23A32; --bad-bg:#FBE7E5;
+  --sun:var(--brass-text); --sun-soft:var(--brass-soft);
+  --display:"Source Serif 4","Iowan Old Style",Georgia,serif;
+  --body:"Atkinson Hyperlegible","Segoe UI",Roboto,Arial,sans-serif;
+  --r-lg:18px; --r:12px; --r-sm:8px;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --navy:#0F1A31; --hero:#17284A; --hero-line:#2A3D63; --navy-2:#1A2A4B; --on-navy:#EEF2FA; --on-navy-2:#A9B5CF;
+  --brass:#E9B24A; --brass-ink:#0F1A31; --brass-text:#F0C46A; --brass-soft:#33280F;
+  --bg:#0B1426; --surface:#13203A; --fg:#E9EEF8; --muted:#A3AECA; --line:#263656;
+  --accent:#9DB6EA; --accent-soft:#1B2B4C; --accent-ink:#0B1426;
+  --fill:#7F9DDA; --track:#22324F;
+  --ok:#55C893; --ok-bg:#112C21; --bad:#F08A80; --bad-bg:#3A1A18;
+  color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --navy:#0F1A31; --hero:#17284A; --hero-line:#2A3D63; --navy-2:#1A2A4B; --on-navy:#EEF2FA; --on-navy-2:#A9B5CF;
+  --brass:#E9B24A; --brass-ink:#0F1A31; --brass-text:#F0C46A; --brass-soft:#33280F;
+  --bg:#0B1426; --surface:#13203A; --fg:#E9EEF8; --muted:#A3AECA; --line:#263656;
+  --accent:#9DB6EA; --accent-soft:#1B2B4C; --accent-ink:#0B1426;
+  --fill:#7F9DDA; --track:#22324F;
+  --ok:#55C893; --ok-bg:#112C21; --bad:#F08A80; --bad-bg:#3A1A18;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font:400 17px/1.55 var(--body)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--navy)}
+button,input,select{font:inherit;color:inherit}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.15;font-weight:600}
+h1{font-size:1.9rem;letter-spacing:-.01em}
+h2{font-size:1.3rem}
+h3{font-size:1.08rem}
+p{margin:0}
+.en{display:block;color:var(--muted);font-size:.86em;font-weight:400;margin-top:2px}
+.muted{color:var(--muted)}
+.small{font-size:.88rem}
+/* Small labels stay in sentence case: easier to read, and Kreyòl accents survive */
+.eyebrow{font-size:.86rem;color:var(--muted);font-weight:700}
+:focus-visible{outline:3px solid var(--brass);outline-offset:2px;border-radius:6px}
+
+/* Header: navy band */
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--navy);color:var(--on-navy)}
+.bar{max-width:660px;margin:0 auto;padding-block:10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;align-items:center;justify-content:space-between;gap:10px}
+.lead{display:flex;align-items:center;gap:10px;min-width:0}
+.brand{display:flex;flex-direction:column;line-height:1}
+.brand b{font-family:var(--display);font-weight:700;font-size:1.6rem;letter-spacing:-.01em}
+.brand b span{color:var(--brass)}
+.brand small{display:none}
+.tchip{display:inline-flex;align-items:center;gap:4px;border:1px solid rgba(255,255,255,.28);color:var(--on-navy);background:transparent;border-radius:999px;padding:5px 11px;font-weight:700;font-size:.85rem;cursor:pointer}
+.tchip[hidden]{display:none}
+.langsel{font-size:.86rem;font-weight:700;color:var(--on-navy);background:var(--navy-2);border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:7px 12px;max-width:52vw;cursor:pointer}
+.langsel option{color:#13213D;background:#fff}
+main .langsel{color:var(--fg);background:var(--bg);border-color:var(--line);max-width:100%}
+.offline{background:var(--brass-soft);color:var(--fg);font-size:.88rem;font-weight:700;text-align:center;padding:6px 16px}
+
+main{max-width:660px;margin:0 auto;padding-top:20px;padding-bottom:calc(104px + env(safe-area-inset-bottom,0px));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:20px}
+section{display:flex;flex-direction:column;gap:12px}
+.foot{font-size:.8rem;color:var(--muted);line-height:1.5}
+
+/* Buttons: brass is the one primary colour */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1.5px solid var(--brass);background:var(--brass);color:var(--brass-ink);font-weight:700;padding:13px 18px;border-radius:var(--r);cursor:pointer;text-align:center;line-height:1.25;min-height:50px}
+.btn:active{transform:translateY(1px)}
+.btn:focus-visible,.banner .btn:focus-visible{outline-color:var(--fg)}
+.btn.ghost{background:var(--surface);color:var(--fg);border-color:var(--line)}
+.btn.ghost:hover{border-color:var(--fg)}
+.btn.full{width:100%}
+.btn.big{min-height:58px;font-size:1.08rem}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+@media (max-width:420px){.actions{grid-template-columns:1fr}}
+.back{border:0;background:none;color:var(--accent);font-weight:700;padding:4px 0;cursor:pointer;align-self:flex-start;text-align:left}
+
+/* Two-up action tiles with a sub-line */
+.duo{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.tile{display:flex;flex-direction:column;align-items:flex-start;gap:3px;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:13px 14px;cursor:pointer;min-height:76px}
+.tile b{font-weight:700;line-height:1.25}
+.tile span{font-size:.84rem;color:var(--muted);line-height:1.35}
+.tile:hover{border-color:var(--fg)}
+.tile[disabled]{opacity:.5;cursor:not-allowed}
+
+/* The pass line */
+.gauge{position:relative;height:10px;background:var(--track);border-radius:99px;margin:10px 0 6px}
+.gauge i{position:absolute;left:0;top:0;bottom:0;width:var(--v,0%);background:var(--fill);border-radius:99px;transition:width .5s ease}
+.gauge.pass i{background:var(--ok)}
+.gauge b{position:absolute;left:var(--p,76%);top:-6px;bottom:-6px;width:3px;margin-left:-1.5px;background:var(--brass);border-radius:2px}
+.gauge.sm{height:6px;margin:6px 0 2px}
+.gauge.sm b{top:-4px;bottom:-4px;width:2px;margin-left:-1px}
+.gauge.empty i{width:0}
+
+/* Home hero: navy panel */
+.hero{background:var(--hero,var(--navy));color:var(--on-navy);border:1px solid var(--hero-line,transparent);border-radius:var(--r-lg);padding:20px 18px 18px;gap:4px}
+.hero h1{font-size:1.55rem}
+.hero .en{color:var(--on-navy-2)}
+.hero .muted{color:var(--on-navy-2)}
+.hero .gauge{background:rgba(255,255,255,.14)}
+.hero .gauge i{background:#9FB6E6}
+.hero .gauge.pass i{background:#6FD3A5}
+.est{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-top:12px}
+.est b{font-family:var(--display);font-weight:700;font-size:3.2rem;line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.est span{color:var(--on-navy-2);font-size:.95rem}
+.passlbl{position:relative;height:18px;font-size:.8rem;color:var(--brass)}
+.passlbl span{position:absolute;left:var(--p,76%);transform:translateX(-50%);white-space:nowrap;font-weight:700}
+.passlbl span.r{transform:translateX(-85%)}
+.hfacts{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:.88rem;color:var(--on-navy-2);font-variant-numeric:tabular-nums}
+.days{display:inline-flex;align-self:flex-start;gap:6px;align-items:baseline;background:rgba(255,255,255,.08);border-radius:999px;padding:3px 10px;font-size:.86rem;color:var(--on-navy-2);margin-bottom:6px}
+.days b{color:var(--brass);font-size:1rem}
+
+/* Lists and rows */
+.list{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden}
+.li{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;border-top:1px solid var(--line);width:100%;background:none;border-left:0;border-right:0;border-bottom:0;text-align:left;cursor:pointer;color:var(--fg)}
+.li:first-child{border-top:0}
+.li:hover{background:var(--accent-soft)}
+.li .cnt{font-size:.84rem;color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums}
+.li.static{cursor:default}.li.static:hover{background:none}
+.li.danger{color:var(--bad)}
+.topic{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 12px;align-items:center;padding:13px 16px;border-top:1px solid var(--line);width:100%;background:none;border-left:0;border-right:0;border-bottom:0;text-align:left;cursor:pointer;color:var(--fg)}
+.topic:first-child{border-top:0}
+.topic:hover{background:var(--accent-soft)}
+.topic .gauge{grid-column:1/-1}
+.topic .cnt{font-size:.84rem;color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums;display:inline-flex;gap:4px;align-items:center}
+.topic .cnt.ok{color:var(--ok);font-weight:700}
+.topic .cnt.bad{color:var(--bad);font-weight:700}
+.secthead{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.secthead .back{font-size:.92rem}
+
+.pill{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:99px;font-size:.8rem;font-weight:700;white-space:nowrap}
+.pill.ok{background:var(--ok-bg);color:var(--ok)}
+.pill.bad{background:var(--bad-bg);color:var(--bad)}
+.pill.lock{background:var(--brass-soft);color:var(--brass-text)}
+.pill.topic{background:var(--accent-soft);color:var(--accent);display:inline-flex;grid-template-columns:none;padding:3px 10px;border:0;width:auto;cursor:default}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:16px;display:flex;flex-direction:column;gap:10px}
+.card.cta{flex-direction:row;justify-content:space-between;align-items:center;text-align:left;cursor:pointer;color:var(--fg);width:100%}
+.card.cta:hover{border-color:var(--fg)}
+.card.cta svg{color:var(--muted);flex:none}
+.card .pct{font-family:var(--display);font-size:1.5rem}
+.plan .pill,.card .pill{align-self:flex-start}
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:.86rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.meter{display:block;height:6px;background:var(--track);border-radius:99px;overflow:hidden}
+.meter i{display:block;height:100%;background:var(--fill);border-radius:99px}
+.banner{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:14px 16px;border-radius:var(--r-lg);background:var(--brass-soft);color:var(--fg)}
+.banner .btn{min-height:44px;padding:10px 16px}
+.banner.soft{background:var(--accent-soft);border:0;width:100%;text-align:left;cursor:pointer;font-weight:700;color:var(--accent)}
+
+/* Quiz */
+body.focus nav.tabs{display:none}
+body.focus main{padding-bottom:calc(110px + env(safe-area-inset-bottom,0px))}
+.qtop{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.qcount{font-weight:700;font-variant-numeric:tabular-nums;color:var(--muted)}
+.qcount b{color:var(--fg)}
+.qhead{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.timer{font-family:var(--display);font-weight:700;font-size:1.15rem;font-variant-numeric:tabular-nums;padding:2px 10px;border-radius:99px;background:var(--accent-soft)}
+.timer.low{color:var(--bad);background:var(--bad-bg)}
+.segs{display:flex;gap:3px}
+.segs i{flex:1;height:5px;border-radius:9px;background:var(--track)}
+.segs i.ok{background:var(--ok)}.segs i.bad{background:var(--bad)}.segs i.on{background:var(--fg)}.segs i.done{background:var(--fill)}
+.qprog{height:5px;background:var(--track);border-radius:9px;overflow:hidden}.qprog i{display:block;height:100%;background:var(--fill)}
+.qtext{font-size:1.22rem;font-weight:700;line-height:1.42}
+.qtext .en{font-size:.82em;margin-top:6px}
+.opts{display:flex;flex-direction:column;gap:10px}
+.opt{display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;background:var(--surface);border:1.5px solid var(--line);border-radius:var(--r);padding:14px;cursor:pointer;line-height:1.4;color:var(--fg);min-height:56px}
+.opt:hover:not([disabled]){border-color:var(--fg)}
+.opt .ltr{flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;border:1.5px solid var(--line);font-weight:700;font-size:.9rem;color:var(--muted)}
+.opt[disabled]{cursor:default}
+.opt.sel{border-color:var(--fg);box-shadow:inset 0 0 0 1px var(--fg)}
+.opt.sel .ltr{background:var(--fg);border-color:var(--fg);color:var(--surface)}
+.opt.ok{border-color:var(--ok);background:var(--ok-bg)}
+.opt.ok .ltr{background:var(--ok);border-color:var(--ok);color:var(--surface)}
+.opt.bad{border-color:var(--bad);background:var(--bad-bg)}
+.opt.bad .ltr{background:var(--bad);border-color:var(--bad);color:var(--surface)}
+.opt.dim{opacity:.6}
+.fb{border-left:4px solid var(--ok);background:var(--surface);border-radius:0 var(--r) var(--r) 0;padding:14px 16px;display:flex;flex-direction:column;gap:10px;scroll-margin-bottom:110px}
+.fb.no{border-left-color:var(--bad)}
+.fb h3{font-family:var(--body);font-size:1.05rem}
+.sign{display:block;width:118px;height:118px;margin:2px 0 0}.sign.sm{width:64px;height:64px}.gsign{float:right;width:84px;height:84px;margin:0 0 8px 14px}
+.fb .cite,.rv .cite{margin:0}
+.faqh{margin:14px 0 2px;font-size:1.15rem}
+.fb.yes h3{color:var(--ok)}.fb.no h3{color:var(--bad)}
+.term{display:inline-flex;flex-wrap:wrap;gap:6px;align-items:baseline;font-size:.9rem;background:var(--accent-soft);border-radius:var(--r-sm);padding:7px 11px;align-self:flex-start}
+.term b{font-weight:700}
+.listen{align-self:flex-start;display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surface);border-radius:99px;padding:6px 13px;font-size:.86rem;font-weight:700;color:var(--accent);cursor:pointer}
+.listen svg{width:16px;height:16px}
+.qbar{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--surface);border-top:1px solid var(--line);padding:10px max(16px,env(safe-area-inset-right,0px)) calc(10px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.qbar .in{max-width:628px;margin:0 auto;display:flex;gap:10px}
+.qbar .btn{flex:1}
+.qbar .hint{flex:1;display:flex;align-items:center;justify-content:center;min-height:50px;color:var(--muted);font-size:.92rem;text-align:center}
+
+/* Results */
+.score{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.score b{font-family:var(--display);font-size:3.2rem;font-weight:700;letter-spacing:-.02em;line-height:1;font-variant-numeric:tabular-nums}
+.verdict{font-size:1.05rem;font-weight:700;color:var(--fg)}
+.verdict.ok{color:var(--ok)}
+.review{display:flex;flex-direction:column;gap:12px}
+.rv{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:14px 16px;display:flex;flex-direction:column;gap:6px}
+.rv .yours{color:var(--bad)}
+.rv .right{color:var(--ok);font-weight:700}
+details.mist>summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:10px;padding:14px 16px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);font-weight:700}
+details.mist>summary::-webkit-details-marker{display:none}
+details.mist[open]>summary{margin-bottom:12px}
+details.mist>summary svg{transition:transform .2s}
+details.mist[open]>summary svg{transform:rotate(90deg)}
+
+/* Learn */
+details.lesson{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg)}
+details.lesson summary{cursor:pointer;padding:14px 16px;list-style:none;display:flex;justify-content:space-between;gap:10px;align-items:center}
+details.lesson summary::-webkit-details-marker{display:none}
+details.lesson[open] summary{border-bottom:1px solid var(--line)}
+.steps{margin:0;padding:14px 16px 16px 40px;display:flex;flex-direction:column;gap:10px}
+.note{margin:0 16px 16px;padding:10px 12px;border-radius:var(--r-sm);background:var(--accent-soft);font-size:.92rem}
+.locked{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:14px 16px;border:1px dashed var(--line);border-radius:var(--r-lg);background:none;width:100%;text-align:left;cursor:pointer;color:var(--fg)}
+.chnum{font-family:var(--display);font-weight:700;font-size:1.25rem;color:var(--muted);min-width:1.6em;font-variant-numeric:tabular-nums}
+.chrow{display:flex;align-items:center;gap:12px;min-width:0}
+.gsec.hl{border-left:4px solid var(--brass);padding-left:14px;margin-left:-18px}
+.gsec{gap:10px;scroll-margin-top:90px}
+.gsec p{max-width:65ch}
+.gl-list{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:8px;max-width:65ch}
+.gl-list li::marker{color:var(--brass-text);font-weight:700}
+.cite{font-size:.8rem;color:var(--muted)}
+.cite a,.gl a,.note a{color:var(--accent)}
+.search{width:100%;padding:12px 14px;border-radius:var(--r);border:1.5px solid var(--line);background:var(--surface);color:var(--fg)}
+.search:focus{border-color:var(--fg);outline:none}
+.gl{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto;gap:10px;align-items:baseline;padding:11px 16px;border-top:1px solid var(--line)}
+.gl:first-child{border-top:0}
+.gl .tag{font-size:.74rem;font-weight:700;color:var(--muted)}
+
+/* Plans */
+.plans{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media (max-width:520px){.plans{grid-template-columns:1fr}}
+.plan{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:16px;display:flex;flex-direction:column;gap:8px}
+.plan.hi{border:2px solid var(--brass)}
+.price{font-family:var(--display);font-weight:700;font-size:1.9rem;line-height:1;font-variant-numeric:tabular-nums}
+.price small{font-family:var(--body);font-size:.86rem;font-weight:400;color:var(--muted)}
+.plan ul{margin:0;padding-left:18px;font-size:.92rem;display:flex;flex-direction:column;gap:4px}
+.tablewrap{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg)}
+table{border-collapse:collapse;width:100%;font-size:.9rem;font-variant-numeric:tabular-nums}
+th,td{padding:10px 14px;text-align:left;border-top:1px solid var(--line)}
+thead th{border-top:0;font-size:.84rem;color:var(--muted)}
+
+/* Bottom tabs */
+nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:5;background:var(--surface);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px);padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px)}
+nav.tabs .in{max-width:660px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr)}
+nav.tabs button{border:0;background:none;color:var(--muted);padding:9px 4px 11px;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:.76rem;font-weight:700;cursor:pointer;position:relative}
+nav.tabs button svg{width:22px;height:22px}
+nav.tabs button[aria-current="page"]{color:var(--fg)}
+nav.tabs button[aria-current="page"]::before{content:"";position:absolute;top:0;left:30%;right:30%;height:3px;border-radius:0 0 3px 3px;background:var(--brass)}
+body.ob nav.tabs{display:none}
+
+/* Onboarding and exam picker */
+.dots{display:flex;gap:6px}.dots i{width:28px;height:5px;border-radius:9px;background:var(--line)}.dots i.on{background:var(--brass)}
+.choices{display:flex;flex-direction:column;gap:10px}
+.choice{display:flex;align-items:center;gap:14px;text-align:left;background:var(--surface);border:1.5px solid var(--line);border-radius:var(--r-lg);padding:16px;cursor:pointer;line-height:1.3;color:var(--fg)}
+.choice>span:last-child,.choice b+span{display:flex;flex-direction:column}
+.choice:hover{border-color:var(--fg)}
+.choice.cur{border-color:var(--brass);box-shadow:inset 0 0 0 1px var(--brass)}
+.choice .code{min-width:64px;font-size:1.35rem}
+.choice.soon{cursor:default;opacity:.6}.choice.soon:hover{border-color:var(--line)}
+.code{font-family:var(--display);font-weight:700;font-size:1.7rem;color:var(--fg);line-height:1}
+.chip{display:inline-flex;align-items:center;gap:4px;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:4px 10px;font-size:.84rem;font-weight:700;color:var(--accent);cursor:pointer}
+.area{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 12px;align-items:center;padding:12px 16px;border-top:1px solid var(--line)}.area:first-child{border-top:0}
+.date{color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:var(--r-sm);padding:5px 8px}
+.or{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:.88rem}.or::before,.or::after{content:"";flex:1;height:1px;background:var(--line)}
+.mini{display:block;height:4px;width:120px;max-width:100%;background:var(--track);border-radius:9px;margin-top:6px;overflow:hidden}.mini i{display:block;height:100%;background:var(--ok)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="bar">
+    <div class="lead"><div class="brand"><b>Paskle<span>.</span></b><small id="tagline">Egzamen an Kreyòl, ak Anglè bò kote</small></div><button type="button" class="tchip" id="trackChip" data-act="nav" data-v="switch" hidden><b>HHA</b><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button></div>
+    <select class="langsel" id="langSel" data-chg="lang" aria-label="Lang / Langue / Idioma / Language">
+      <option value="ht">Kreyòl</option>
+      <option value="both">Kreyòl + English</option>
+      <option value="fr">Français + English</option>
+      <option value="es">Español + English</option>
+      <option value="en">English</option>
+    </select>
+  </div>
+</header>
+
+<div class="offline" id="offline" role="status" hidden></div>
+<main id="app" aria-live="polite"></main>
+
+<nav class="tabs" aria-label="Navigation">
+  <div class="in">
+    <button type="button" data-act="nav" data-v="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg><span data-ui="tabHome"></span></button>
+    <button type="button" data-act="nav" data-v="learn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5a2 2 0 012-2h13v16H6a2 2 0 00-2 2z"/><path d="M4 21V5"/><path d="M9 8h6M9 12h6"/></svg><span data-ui="tabLearn"></span></button>
+    <button type="button" data-act="nav" data-v="practice"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h9"/></svg><span data-ui="tabPractice"></span></button>
+    <button type="button" data-act="nav" data-v="account"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg><span data-ui="tabAccount"></span></button>
+  </div>
+</nav>
+
+<script src="data/hha-a.js"></script>
+<script src="data/hha-b.js"></script>
+<script src="data/hha-c.js"></script>
+<script src="data/hha-d.js"></script>
+<script src="data/hha-map.js"></script>
+<script src="data/cna-a.js"></script>
+<script src="data/ma-cna.js"></script>
+<script src="data/permit-a.js"></script>
+<script>
+/* ---------- UI strings ---------- */
+const UI={
+ ht:{tag:"Egzamen an Kreyòl, ak Anglè bò kote",tabHome:"Akèy",tabLessons:"Leson",tabGlossary:"Glosè",
+  hello:"Ki egzamen w ap pare?",helloSub:"Etidye nan lang ou. Pratike ak mo Anglè yo menm jan w ap wè yo jou egzamen an.",
+  answered:"kesyon fèt",correctPct:"bon repons",missedN:"erè pou revize",
+  practice:"Pratike",exam:"Simulasyon egzamen",missed:"Revize erè m yo",lessonsBtn:"Leson ak konpetans",
+  topics:"Sijè yo",qs:"kesyon",locked:"Premium",back:"← Retounen",question:"Kesyon",
+  listen:"Koute an Anglè",right:"Bon repons!",wrong:"Pa tout afè.",term:"Mo kle",next:"Pwochen",finish:"Fini",
+  result:"Rezilta",pass:"Ou pase",fail:"Poko pase",goal:"Objektif",yours:"Repons ou",correct:"Bon repons",skipped:"Pa reponn",
+  again:"Rekòmanse",toTrack:"Retounen nan egzamen an",allRight:"Ou jwenn tout bon. Bravo!",
+  noneMissed:"Ou pa gen erè pou revize nan egzamen sa a.",noneAvail:"Pa gen kesyon gratis nan sijè sa a.",
+  unlock:"Debloke ak Premium",freeLimit:"Vèsyon gratis: kesyon echantiyon nan chak sijè, chapit gratis yo, ak yon mini simulasyon 5 kesyon.",
+  lessonsTitle:"Leson ak konpetans",lessonsSub:"Etap pa etap, an Kreyòl ak Anglè.",steps:"etap",
+  glossTitle:"Glosè medikal ak wout",glossSub:"Mo Anglè w ap wè sou egzamen an, ak siyifikasyon yo an Kreyòl.",search:"Chèche yon mo…",
+  premTitle:"Paskle Premium",premSub:"Tout kesyon, simulasyon san limit, tout leson.",demoOn:"Aktive Premium (demo)",demoOff:"Retounen nan vèsyon gratis",
+  demoNote:"Vèsyon demo: pa gen peman. Pri yo se pri pwopoze.",isPrem:"Premium aktive (demo)",
+  roadmap:"Plan kontni",now:"Kounye a",target:"Objektif v1",timeUp:"Tan an fini.",
+  disclaimer:"Paskle pa afilye ak RMV Massachusetts, DPH, oswa FMCSA. Kesyon yo baze sou manyèl ofisyèl yo. Toujou verifye ak dènye vèsyon manyèl la.",
+  sample:"Kesyon echantiyon",guides:"Gid etid",chapter:"Chapit",guideCheck:"Teste tèt ou: 5 kesyon",reviewCh:"Revize chapit la",readSec:"Li seksyon sa a nan gid la",backQuiz:"Retounen nan kesyon an",keyTerms:"Mo pou egzamen an",
+  srcLabel:"Sous",pg:"paj",roadSign:"Siy wout",faqSubPermit:"Sa pou w konnen pou jwenn pèmi apranti ak lisans ou nan Massachusetts, dapre Mànyèl Chofè RMV a (avril 2026). Frè ak règ yo ka chanje: verifye nan Mass.Gov/RMV.",sourcesTitle:"Sous ak lisans",sourcesSub:"Kontni sa a ekri an pwòp mo nou, apati sous gratis ak sous ofisyèl. Men ki kote chak enfòmasyon soti.",
+  viewSources:"Sous ak lisans",attrib:"Kèk pati nan gid sa yo adapte de Nursing Assistant, pa Myra Sandquist Reuter (WisTech Open / Chippewa Valley Technical College, remix Open RN), anba lisans CC BY 4.0. Chanjman: reekri, rezime, mete ansanm ak gid CDC ak enfòmasyon egzamen Massachusetts, epi tradui an Kreyòl, an franse ak an panyòl. Nou pa itilize pati ki anba lisans CC BY-NC.",
+  faq:"Kesyon sou egzamen an",faqSub:"Sa pou w konnen sou fòmasyon ak evalyasyon HHA. Verifye detay yo ak ajans oswa lekòl ou.",skillsCh:"Konpetans pratik nan chapit sa a",observed:"Enfimyè a gade w fè l",chLocked:"Rès chapit sa a disponib ak Premium.",
+  guidesLocked:"Lòt chapit yo ap vini. Chak chapit swiv plan egzamen ofisyèl la."},
+ en:{tag:"Exam prep in Haitian Creole, with English alongside",tabHome:"Home",tabLessons:"Lessons",tabGlossary:"Glossary",
+  hello:"Which exam are you preparing for?",helloSub:"Study in your language. Practice with the English terms exactly as you will see them on exam day.",
+  answered:"questions done",correctPct:"correct",missedN:"mistakes to review",
+  practice:"Practice",exam:"Exam simulation",missed:"Review my mistakes",lessonsBtn:"Lessons and skills",
+  topics:"Topics",qs:"questions",locked:"Premium",back:"← Back",question:"Question",
+  listen:"Listen in English",right:"Correct!",wrong:"Not quite.",term:"Key term",next:"Next",finish:"Finish",
+  result:"Results",pass:"You passed",fail:"Not passed yet",goal:"Goal",yours:"Your answer",correct:"Correct answer",skipped:"Not answered",
+  again:"Start again",toTrack:"Back to this exam",allRight:"You got every one right. Well done!",
+  noneMissed:"You have no mistakes to review for this exam.",noneAvail:"No free questions in this topic.",
+  unlock:"Unlock with Premium",freeLimit:"Free version: sample questions in every topic, the free chapters, and one 5-question mini simulation.",
+  lessonsTitle:"Lessons and skills",lessonsSub:"Step by step, in Kreyòl and English.",steps:"steps",
+  glossTitle:"Medical and road glossary",glossSub:"English words you will see on the exam, with their meaning in Kreyòl.",search:"Search a word…",
+  premTitle:"Paskle Premium",premSub:"Every question, unlimited exam simulations, every lesson.",demoOn:"Turn on Premium (demo)",demoOff:"Back to the free version",
+  demoNote:"Demo version: no payment is taken. Prices are proposed prices.",isPrem:"Premium is on (demo)",
+  roadmap:"Content plan",now:"Now",target:"v1 target",timeUp:"Time is up.",
+  disclaimer:"Paskle is not affiliated with the Massachusetts RMV, DPH, or FMCSA. Questions are based on the official manuals. Always check the latest edition.",
+  sample:"Sample questions",guides:"Study guides",chapter:"Chapter",guideCheck:"Check yourself: 5 questions",reviewCh:"Review the chapter",readSec:"Read this in the guide",backQuiz:"Back to the question",keyTerms:"Exam-day terms",
+  srcLabel:"Sources",pg:"p.",roadSign:"Road sign",faqSubPermit:"What to know about getting your Massachusetts learner's permit and license, from the RMV Driver's Manual (April 2026). Fees and rules can change: confirm at Mass.Gov/RMV.",sourcesTitle:"Sources and licenses",sourcesSub:"This content is written in our own words from free and official sources. Here is where each fact comes from.",
+  viewSources:"Sources and licenses",attrib:"Portions of these guides are adapted from Nursing Assistant by Myra Sandquist Reuter (WisTech Open / Chippewa Valley Technical College, remixed from Open RN), licensed CC BY 4.0. Changes: rewritten and summarized, merged with CDC guidance and Massachusetts exam information, and translated into Haitian Creole, French and Spanish. Content licensed CC BY-NC in the original was not used.",
+  faq:"Exam FAQ",faqSub:"What to know about HHA training and evaluation. Confirm details with your agency or school.",skillsCh:"Hands-on skills in this chapter",observed:"Observed by a nurse",chLocked:"The rest of this chapter is available with Premium.",
+  guidesLocked:"More chapters are coming. Each chapter follows the official exam blueprint."}
+};
+
+/* ---------- Tracks ---------- */
+const TR={
+ cna:{code:"CNA",name:{ht:"Asistan Enfimyè Sètifye",en:"Certified Nursing Assistant"},
+  fact:{ht:"Egzamen ekri MA: 60 kesyon, 60 minit",en:"MA written exam: 60 questions, 60 minutes"},
+  pass:.76,goalNote:{ht:"Nòt pou pase MA: 76%",en:"MA passing score: 76%"},exam:{n:60,min:60},
+  examNote:{ht:"Menm fòma ak egzamen ekri Massachusetts la: kantite kesyon pa sijè swiv plan ofisyèl la. Pou pase: 76%.",en:"Same format as the Massachusetts written test: questions per topic follow the official outline. Pass: 76%."},
+  topics:{inf:{ht:"Kontwòl enfeksyon",en:"Infection control"},safe:{ht:"Sekirite",en:"Safety"},rights:{ht:"Dwa rezidan",en:"Resident rights"},care:{ht:"Swen pèsonèl",en:"Personal care"},vitals:{ht:"Siy vital",en:"Vital signs"},comm:{ht:"Kominikasyon",en:"Communication"}}},
+ hha:{code:"HHA",name:{ht:"Ed Swen a Domisil (HHA)",en:"Home Health Aide"},
+  fact:{ht:"14 sijè federal (42 CFR 484.80): ekri oswa oral, plis konpetans yon RN gade",en:"14 federal subjects (42 CFR 484.80): written or oral, plus skills an RN observes"},
+  pass:.8,goalNote:{ht:"Objektif pratik: 80% oswa plis",en:"Practice goal: 80% or higher"},exam:{n:50,min:50},
+  examNote:{ht:"Pa gen yon sèl egzamen ekri HHA: se ajans oswa lekòl ou ki bay li. Egzamen pratik sa a gen 50 kesyon sou tout 14 sijè yo.",en:"There is no single HHA written exam: your agency or school gives it. This practice test uses 50 questions from all 14 subjects."},
+  topics:{scope:{ht:"Wòl ak limit travay",en:"Role and scope"},home:{ht:"Sekirite lakay",en:"Home safety"},inf:{ht:"Enfeksyon",en:"Infection control"},food:{ht:"Manje",en:"Food safety"},emerg:{ht:"Ijans ak abi",en:"Emergencies and abuse"},doc:{ht:"Rapò ak dwa",en:"Reporting and rights"}}},
+ permit:{code:"PÈMI",name:{ht:"Pèmi Kondui Massachusetts",en:"Massachusetts Learner's Permit"},
+  fact:{ht:"Egzamen RMV: 25 kesyon, 18 bon pou pase, disponib an Kreyòl",en:"RMV test: 25 questions, 18 to pass, available in Haitian Creole"},
+  pass:.72,goalNote:{ht:"Nòt pou pase: 72% (18 sou 25)",en:"Passing score: 72% (18 of 25)"},exam:{n:25,min:25},
+  examNote:{ht:"Menm longè ak menm nòt pou pase tankou egzamen RMV a: 25 kesyon, 25 minit, 18 bon. RMV pa pibliye konbyen kesyon ki soti nan chak sijè; Paskle separe yo sou tout 8 chapit yo.",en:"Same length and passing score as the RMV test: 25 questions, 25 minutes, 18 right. The RMV does not publish how many questions come from each topic; Paskle spreads them across all 8 chapters."},
+  topics:{}},
+ cdl:{code:"CDL",name:{ht:"Lisans Chofè Komèsyal",en:"Commercial Driver's License"},
+  fact:{ht:"Konesans jeneral: 50 kesyon, 80% pou pase",en:"General knowledge: 50 questions, 80% to pass"},
+  pass:.8,goalNote:{ht:"Nòt pou pase: 80%",en:"Passing score: 80%"},exam:{n:50,min:50},soon:1,
+  topics:{insp:{ht:"Enspeksyon",en:"Inspection"},air:{ht:"Fren lè",en:"Air brakes"},drive:{ht:"Kondui an sekirite",en:"Safe driving"},emerg:{ht:"Ijans",en:"Emergencies"},cargo:{ht:"Chajman",en:"Cargo"},alc:{ht:"Alkòl",en:"Alcohol"}}}
+};
+
+/* ---------- Question bank: q(id, track, topic, correctIndex, free, [termEN, termHT], [ht q, a,b,c,d, explanation], [en ...]) ---------- */
+const Q=[];
+function q(id,t,tp,c,free,k,ht,en){Q.push({id,t,tp,c,free,k,ht,en})}
+
+/* CNA */
+q("cna1","cna","inf",1,1,["hand hygiene","ijyèn men"],
+ ["Lè w ap lave men w, konbyen tan pou w fwote ak savon?","Anviwon 5 segonn","Omwen 20 segonn","Sèlman si men w sal","Sèlman lè w fin travay","Fwote omwen 20 segonn: pla men, do men, ant dwèt yo ak anba zong yo. Rense, epi seche ak yon sèvyèt papye pwòp."],
+ ["When washing your hands, how long should you scrub with soap?","About 5 seconds","At least 20 seconds","Only if your hands look dirty","Only at the end of your shift","Scrub at least 20 seconds: palms, backs of hands, between fingers and under nails. Rinse, then dry with a clean paper towel."]);
+q("cna2","cna","inf",0,1,["gloves","gan"],
+ ["Lè w ap retire ekipman pwoteksyon (PPE), kisa ou retire an premye?","Gan yo","Mask la","Rad izolasyon an","Linèt pwoteksyon yo","Gan yo pi kontamine, se pou sa yo soti an premye. Lave men w apre w fin retire tout PPE yo."],
+ ["When taking off PPE, which item do you usually remove first?","Gloves","Mask","Gown","Goggles","Gloves are the most contaminated, so they come off first. Clean your hands after removing all PPE."]);
+q("cna3","cna","safe",0,1,["fall","tonbe"],
+ ["Yon rezidan kòmanse tonbe pandan w ap ede l mache. Kisa pou w fè?","Desann li dousman atè epi pwoteje tèt li","Kenbe l kanpe kèlkeswa sa k rive","Lage l epi kouri chèche èd","Rale l leve pa bra li","Louvri pye w, rale rezidan an toupre w, epi glise l dousman atè. Rete avè l, rele enfimyè a, epi pa deplase l jiskaske yo egzamine l."],
+ ["A resident starts to fall while you are helping them walk. What should you do?","Ease them to the floor and protect their head","Hold them up no matter what","Let go and run for help","Pull them up by the arm","Widen your stance, bring the resident close, and slide them gently to the floor. Stay with them, call the nurse, and do not move them until they are checked."]);
+q("cna4","cna","safe",2,1,["call light","bouton apèl"],
+ ["Apre w fin bay swen nan kabann, nan ki pozisyon pou w kite kabann nan?","Nan pozisyon ki pi wo a","Wotè senti w","Nan pozisyon ki pi ba a, ak wou yo bloke","Kote fanmi an vle","Yon kabann ki ba epi ki bloke diminye risk blesi si rezidan an eseye leve. Kite bouton apèl la toupre l tou."],
+ ["After giving care in bed, where should you leave the bed?","At the highest position","At your waist height","In the lowest position, wheels locked","Wherever the family wants","A low, locked bed lowers the risk of injury if the resident tries to get up. Also leave the call light within reach."]);
+q("cna5","cna","rights",1,1,["resident rights","dwa rezidan"],
+ ["Yon rezidan refize benyen. Kisa pou w fè?","Benyen l kanmenm","Respekte chwa li epi di enfimyè a","Mande fanmi an fòse l","Kite sa epi pa di anyen","Rezidan yo gen dwa refize swen. Mande l poukisa, pwopoze yon lòt lè, epi rapòte refi a bay enfimyè a."],
+ ["A resident refuses a bath. What should you do?","Give the bath anyway","Respect the choice and tell the nurse","Ask the family to force them","Skip it and say nothing","Residents have the right to refuse care. Ask why, offer another time, and report the refusal to the nurse."]);
+q("cna6","cna","care",0,0,["affected (weak) side","bò ki fèb la"],
+ ["Yon rezidan fèb sou bò dwat. Lè w ap abiye l, ki bra ki antre nan chemiz la an premye?","Bra ki fèb la (dwat)","Bra ki fò a (goch)","Sa pa fè okenn diferans","Okenn; se yon wòb lopital sèlman","Abiye bò ki fèb la an premye, epi dezabiye bò ki fò a an premye. Konsa bra ki fèb la pa pliye yon fason ki fè l mal."],
+ ["A resident has weakness on the right side. When dressing them, which arm goes into the shirt first?","The weak (right) arm","The strong (left) arm","It does not matter","Neither; use a hospital gown only","Dress the weak side first and undress the strong side first. This keeps the weak arm from bending in a painful way."]);
+q("cna7","cna","care",1,0,["perineal care","swen pati entim"],
+ ["Pandan swen pati entim (perineal care) pou yon rezidan fanm, nan ki direksyon ou siye?","Depi dèyè rive devan","Depi devan rive dèyè","An wonn","Nenpòt direksyon si w dous","Siye depi devan rive dèyè, ak yon pati pwòp twal la chak fwa. Sa anpeche mikwòb dèyè yo rive nan kanal pipi a."],
+ ["During perineal care for a female resident, which way do you wipe?","Back to front","Front to back","In circles","Any direction, if gentle","Wipe front to back, using a clean part of the cloth for each stroke. This keeps bacteria from the anus away from the urinary tract."]);
+q("cna8","cna","vitals",1,0,["fever","lafyèv"],
+ ["Ki tanperati nòmal nan bouch pou yon granmoun?","96.0°F (35.6°C)","98.6°F (37°C)","100.4°F (38°C)","102°F (38.9°C)","Anviwon 98.6°F nòmal. Rapòte 100.4°F oswa plis bay enfimyè a, paske sa ka vle di lafyèv."],
+ ["What is a normal oral temperature for an adult?","96.0°F (35.6°C)","98.6°F (37°C)","100.4°F (38°C)","102°F (38.9°C)","About 98.6°F is normal. Report 100.4°F or higher to the nurse, since it can mean a fever."]);
+q("cna9","cna","vitals",1,0,["pulse","pou"],
+ ["Ki nivo pou nòmal pou yon granmoun k ap repoze?","40–60 batman pa minit","60–100 batman pa minit","100–140 batman pa minit","140–180 batman pa minit","Konte pou radyal la pandan 60 segonn konplè. Rapòte yon pou ki anba 60 oswa plis pase 100 bay enfimyè a."],
+ ["What is the normal resting pulse range for an adult?","40–60 beats per minute","60–100 beats per minute","100–140 beats per minute","140–180 beats per minute","Count the radial pulse for a full 60 seconds. Report a pulse under 60 or over 100 to the nurse."]);
+q("cna10","cna","safe",2,0,["choking","toufe"],
+ ["Pou diminye risk toufe, kijan yon rezidan dwe chita pou l manje?","Kouche plat","Panche a 30 degre","Chita dwat, toupre 90 degre","Kouche sou kote","Chita dwat ede manje desann nan bon chemen. Veye siy toufe, tankou touse oswa yon vwa ki sonnen mouye."],
+ ["To lower the risk of choking, how should a resident sit while eating?","Lying flat","Reclined at 30 degrees","Upright, close to 90 degrees","On their side","Sitting upright helps food go down the right way. Watch for signs of choking, such as coughing or a wet-sounding voice."]);
+q("cna11","cna","care",1,0,["pressure injury (bedsore)","blesi presyon (eska)"],
+ ["Yon rezidan ki pa ka bouje nan kabann, chak konbyen tan pou w chanje pozisyon l omwen?","Chak 30 minit","Chak 2 èdtan","De fwa pa jou","Yon fwa pa woulman","Vire l omwen chak 2 èdtan pou retire presyon sou zo yo epi ede anpeche blesi presyon (eska)."],
+ ["A resident who cannot move in bed should be repositioned at least how often?","Every 30 minutes","Every 2 hours","Twice a day","Once a shift","Turning at least every 2 hours relieves pressure on bony areas and helps prevent pressure injuries (bedsores)."]);
+q("cna12","cna","comm",2,0,["hearing aid","aparèy pou tande"],
+ ["Ki pi bon fason pou w pale ak yon rezidan ki gen pwoblèm tande?","Rele fò pou l tande","Pale dèyè do l","Gade l nan figi epi pale klè, pa twò vit","Ekri tout bagay olye w pale","Kanpe anfas rezidan an kote ki gen bon limyè, atire atansyon l anvan, epi pale klè. Verifye aparèy pou tande yo an plas epi yo mache."],
+ ["What is the best way to speak with a resident who has hearing loss?","Shout so they can hear","Speak from behind them","Face them and speak clearly at a normal pace","Write everything instead of talking","Face the resident in good light, get their attention first, and speak clearly. Check that hearing aids are in and working."]);
+q("cna13","cna","rights",3,0,["confidentiality","konfidansyalite"],
+ ["Ak ki moun ou ka pataje enfòmasyon sante yon rezidan?","Zanmi w, si w pa di non l","Lòt rezidan","Nenpòt moun ki mande ak politès","Sèlman manm ekip swen ki bezwen l pou bay swen","Lwa sou konfidansyalite (HIPAA) pwoteje enfòmasyon sante. Pataje l sèlman ak anplwaye ki bezwen l pou bay swen, epi pa janm poste anyen sou rezidan yo sou entènèt."],
+ ["Who can you share a resident's health information with?","Your friends, if you leave out the name","Other residents","Anyone who asks politely","Only care team members who need it to give care","Privacy law (HIPAA) protects health information. Share it only with staff who need it to give care, and never post about residents online."]);
+
+/* CNA: Infection Control chapter check (guide g-cna-inf) */
+q("cna14","cna","inf",1,1,["chain of infection","chèn enfeksyon"],
+ ["Lave men w kase sitou ki maiyon nan chèn enfeksyon an?","Mikwòb la","Mòd transmisyon","Moun ki fasil pran l","Rezèvwa","Men pote mikwòb de yon moun a yon lòt. Ijyèn men anpeche mikwòb la vwayaje, kidonk li kase mòd transmisyon an."],
+ ["Washing your hands mainly breaks which link of the chain of infection?","Infectious agent","Mode of transmission","Susceptible host","Reservoir","Hands carry germs from person to person. Hand hygiene stops the germ from traveling, which breaks the mode of transmission."]);
+q("cna15","cna","inf",2,1,["alcohol-based hand sanitizer","dezenfektan men ak alkòl"],
+ ["Ki lè ou dwe sèvi ak savon ak dlo olye dezenfektan men?","Apre w pran pou","Anvan w antre nan nenpòt chanm","Lè yon rezidan gen C. diff","Chak fwa; dezenfektan pa janm pèmèt","Dezenfektan pa touye espò C. diff yo byen, kidonk lave ak savon ak dlo. Sèvi ak savon tou lè men w sal yon fason ou ka wè."],
+ ["When must you use soap and water instead of hand sanitizer?","After taking a pulse","Before entering any room","When a resident has C. diff","Every time; sanitizer is never allowed","Sanitizer does not reliably kill C. diff spores, so wash with soap and water. Also use soap when your hands are visibly soiled."]);
+q("cna16","cna","inf",1,1,["droplet precautions","prekosyon gout"],
+ ["Yon rezidan ki gen grip sou prekosyon gout (droplet). Kisa ou ajoute sou prekosyon estanda yo?","Yon respiratè ak yon chanm espesyal","Yon mask","Anyen anplis","Kouvèti soulye sèlman","Prekosyon gout ajoute yon mask, paske gout touse ak estènye ka vwayaje anviwon 6 pye."],
+ ["A resident with the flu is on droplet precautions. What do you add to standard precautions?","A respirator and a special room","A mask","Nothing extra","Shoe covers only","Droplet precautions add a mask, because droplets from coughs and sneezes can travel about 6 feet."]);
+q("cna17","cna","inf",3,1,["personal protective equipment (PPE)","ekipman pwoteksyon (PPE)"],
+ ["Lè w ap mete PPE, kisa ou mete an dènye?","Rad izolasyon","Mask","Linèt","Gan","Mete rad izolasyon, mask, linèt oswa visyè, epi gan an dènye, rale yo sou manch rad la."],
+ ["When putting on PPE, which item goes on last?","Gown","Mask","Goggles","Gloves","Put on the gown, mask, goggles or face shield, then gloves last, pulled over the gown cuffs."]);
+q("cna18","cna","inf",0,1,["urinary tract infection (UTI)","enfeksyon nan kanal pipi"],
+ ["Yon rezidan 85 an gen yon enfeksyon nan kanal pipi. Ki siy ou ka remake olye lafyèv?","Konfizyon ki fèk parèt","Pi bon apeti","Respirasyon ki pi dousman","Sik nan san ki pi ba","Granmoun souvan pa gen lafyèv. Konfizyon ki fèk parèt oswa feblès toudenkou ka premye siy lan. Rapòte l bay enfimyè a touswit."],
+ ["An 85-year-old resident has a urinary tract infection. What sign might you notice instead of a fever?","New confusion","Better appetite","Slower breathing","Lower blood sugar","Older adults often do not run a fever. New confusion or sudden weakness can be the first sign. Report it to the nurse right away."]);
+
+
+/* CDL */
+q("c1","cdl","alc",1,1,["commercial motor vehicle (CMV)","machin komèsyal"],
+ ["Ki limit alkòl nan san pou yon chofè k ap kondui yon machin komèsyal (CMV)?","0.02%","0.04%","0.06%","0.08%","Limit federal la pou yon machin komèsyal se 0.04%, mwatye limit pou pifò chofè machin."],
+ ["What is the blood alcohol limit for a driver operating a commercial motor vehicle (CMV)?","0.02%","0.04%","0.06%","0.08%","The federal limit in a commercial motor vehicle is 0.04%, half the limit for most car drivers."]);
+q("c2","cdl","drive",1,1,["following distance","distans dèyè"],
+ ["Kamyon w lan gen 40 pye longè epi w ap kondui anba 40 mph. Ki tan minimòm pou w kite ant ou ak machin devan w?","2 segonn","4 segonn","6 segonn","8 segonn","Kite 1 segonn pou chak 10 pye longè machin nan anba 40 mph. Pi wo pase 40 mph, ajoute 1 segonn anplis (5 segonn isit la)."],
+ ["Your truck is 40 feet long and you are driving under 40 mph. What is the minimum following time?","2 seconds","4 seconds","6 seconds","8 seconds","Leave 1 second for each 10 feet of vehicle length below 40 mph. Over 40 mph, add 1 more second (5 seconds here)."]);
+q("c3","cdl","insp",2,1,["tread depth","pwofondè tras"],
+ ["Ki pwofondè minimòm tras kawotchou devan yo (direksyon) dwe genyen?","1/32 pous","2/32 pous","4/32 pous","6/32 pous","Kawotchou devan yo bezwen omwen 4/32 pous tras nan chak gwo kannal. Lòt kawotchou yo bezwen omwen 2/32 pous."],
+ ["What is the minimum tread depth for front (steering) tires?","1/32 inch","2/32 inch","4/32 inch","6/32 inch","Front tires need at least 4/32 inch of tread in every major groove. Other tires need at least 2/32 inch."]);
+q("c4","cdl","air",0,1,["air brakes","fren lè"],
+ ["Alam presyon lè ki ba a dwe limen anvan presyon an desann anba:","60 psi","80 psi","100 psi","125 psi","Yon limyè oswa yon sonnri dwe limen anvan presyon lè nan tank yo desann anba 60 psi."],
+ ["The low air pressure warning must come on before pressure drops below:","60 psi","80 psi","100 psi","125 psi","A warning light or buzzer must come on before air pressure in the tanks falls below 60 psi."]);
+q("c5","cdl","emerg",0,1,["warning triangles","triyang avètisman"],
+ ["Apre w kanpe sou wout la, nan konbyen tan ou dwe mete triyang avètisman yo?","Anvan 10 minit","Anvan 30 minit","Anvan 1 èdtan","Sèlman lannwit","Mete triyang avètisman yo anvan 10 minit apre w kanpe. Limen limyè ijans kat bò yo touswit."],
+ ["After you stop on the road, how soon must you put out warning triangles?","Within 10 minutes","Within 30 minutes","Within 1 hour","Only at night","Place warning devices within 10 minutes of stopping. Turn on your four-way flashers right away."]);
+q("c6","cdl","air",2,0,["spring brakes","fren resò"],
+ ["Sou pifò gwo machin, fren resò (spring brakes) yo mete pou kont yo lè presyon lè desann a anviwon:","90–100 psi","60–80 psi","20–45 psi","Anba 5 psi","Lè presyon tank yo tonbe ant 20 ak 45 psi, fren resò yo mete. Kanpe san danje anvan presyon an desann konsa."],
+ ["On most heavy vehicles, spring brakes come on automatically when air pressure drops to about:","90–100 psi","60–80 psi","20–45 psi","Below 5 psi","When tank pressure falls into the 20–45 psi range, the spring brakes apply. Stop safely before pressure gets that low."]);
+q("c7","cdl","drive",1,0,["downgrade","desant"],
+ ["Anvan w desann yon long pant ki rèd, ou dwe:","Mete l nan pwen mò pou ekonomize gaz","Mete yon vitès pi ba anvan w kòmanse desann","Peze fren pandan tout desant lan","Akselere pou desann pi vit","Chwazi yon vitès ki ba anvan desant lan. Si w kenbe pye w sou fren an, fren yo chofe epi yo ka pèdi fòs (brake fade)."],
+ ["Before going down a long, steep grade, you should:","Shift into neutral to save fuel","Shift into a lower gear before starting down","Use the brakes the whole way","Speed up to get down faster","Choose a low gear before the downgrade. Riding the brakes overheats them and causes brake fade, which can make them fail."]);
+q("c8","cdl","drive",1,0,["railroad crossing","kwazman ray tren"],
+ ["Lè w dwe kanpe nan yon kwazman ray tren, a ki distans ray ki pi pre a pou w kanpe?","5 a 10 pye","15 a 50 pye","60 a 100 pye","Plis pase 100 pye","Kanpe ant 15 ak 50 pye de ray ki pi pre a. Gade epi koute de bò anvan w travèse, epi pa chanje vitès sou ray yo."],
+ ["When you must stop at a railroad crossing, how far from the nearest rail should you stop?","5 to 10 feet","15 to 50 feet","60 to 100 feet","More than 100 feet","Stop 15 to 50 feet from the nearest rail. Look and listen both ways before crossing, and do not shift gears on the tracks."]);
+q("c9","cdl","cargo",2,0,["cargo securement","atach chajman"],
+ ["Apre w kòmanse yon vwayaj, ki lè pou w tcheke chajman an ak atach li yo an premye?","Apre 500 mil","Sèlman nan fen vwayaj la","Nan 50 premye mil yo","Sèlman si w tande bri","Tcheke chajman an nan 50 premye mil yo, apre sa chak 150 mil oswa chak 3 èdtan, sa ki rive an premye."],
+ ["After starting a trip, when should you first re-check your cargo and securement?","After 500 miles","Only at the end of the trip","Within the first 50 miles","Only if you hear noise","Check cargo within the first 50 miles, then every 150 miles or every 3 hours, whichever comes first."]);
+q("c10","cdl","emerg",1,0,["fire extinguisher","ekstentè"],
+ ["Ki kalite ekstentè yo itilize pou dife elektrik?","A","B:C","Dlo sèlman","Kim sèlman","Sèvi ak yon ekstentè B:C pou dife elektrik ak likid k ap boule. Pa janm mete dlo sou yon dife elektrik."],
+ ["Which type of fire extinguisher is used on electrical fires?","A","B:C","Water only","Foam only","Use a B:C extinguisher on electrical and burning-liquid fires. Never use water on an electrical fire."]);
+q("c11","cdl","air",3,0,["governor cut-out","gouvènè (cut-out)"],
+ ["Gouvènè konpresè lè a konn sispann ponpe lè (cut-out) a anviwon:","60 psi","80 psi","100 psi","125 psi","Cut-out la konn rive anviwon 125 psi. Tcheke manyèl machin ou; chif yo ka varye."],
+ ["The air compressor governor usually stops pumping air (cut-out) at about:","60 psi","80 psi","100 psi","125 psi","Cut-out is usually around 125 psi. Check your vehicle's manual, since values can vary."]);
+q("c12","cdl","insp",0,0,["pre-trip inspection","enspeksyon anvan vwayaj"],
+ ["Kisa ki objektif prensipal yon enspeksyon anvan vwayaj (pre-trip)?","Jwenn pwoblèm ki ka lakòz aksidan oswa pàn","Netwaye kamyon an","Note konbyen gaz ou itilize","Tcheke radyo a","Yon enspeksyon anvan vwayaj jwenn pwoblèm sekirite anvan w kondui. Lwa a mande pou w asire w machin nan san danje anvan w pati."],
+ ["What is the main purpose of a pre-trip inspection?","To find problems that could cause a crash or breakdown","To clean the truck","To log fuel use","To check the radio","A pre-trip inspection finds safety problems before you drive. The law requires you to be sure the vehicle is safe before you leave."]);
+
+/* ---------- Lessons ---------- */
+const LS=[
+ {t:"cna",free:1,title:{ht:"Lave men (konpetans)",en:"Handwashing (skill)"},steps:[
+  ["Louvri dlo tyèd. Pa kite rad ou touche lavabo a.","Turn on warm water. Keep your clothes from touching the sink."],
+  ["Mouye men w ak ponyèt ou, pwent dwèt yo vire anba.","Wet hands and wrists, fingertips pointing down."],
+  ["Mete savon, epi fwote omwen 20 segonn: pla men, do men, ant dwèt yo, anba zong yo.","Apply soap and scrub at least 20 seconds: palms, backs, between fingers, under nails."],
+  ["Rense depi ponyèt rive pwent dwèt.","Rinse from wrists to fingertips."],
+  ["Seche ak yon sèvyèt papye pwòp.","Dry with a clean paper towel."],
+  ["Fèmen tiyo a ak yon lòt sèvyèt papye pwòp, epi jete l.","Turn off the faucet with a new paper towel, then throw it away."]],
+  note:["Si men w touche lavabo a, rekòmanse depi nan kòmansman.","If your hands touch the sink, start over from the beginning."]},
+ {t:"cna",free:0,title:{ht:"Mezire pou radyal",en:"Counting a radial pulse"},steps:[
+  ["Lave men w, prezante w, epi eksplike sa w pral fè.","Clean your hands, introduce yourself, and explain what you will do."],
+  ["Mete 2 oswa 3 dwèt sou bò pous ponyèt la. Pa sèvi ak pous ou.","Place 2 or 3 fingers on the thumb side of the wrist. Do not use your thumb."],
+  ["Konte batman yo pandan 60 segonn konplè.","Count the beats for a full 60 seconds."],
+  ["Ekri chif la touswit.","Write the number down right away."],
+  ["Rapòte bay enfimyè a si l anba 60 oswa plis pase 100.","Report to the nurse if it is under 60 or over 100."]],
+  note:["Pous ou gen pwòp pou pa l; si w sèvi avè l, ou ka konte pa w olye pa rezidan an.","Your thumb has its own pulse; using it can make you count your own instead of the resident's."]},
+ {t:"permit",free:1,g:"g-permit-c7",title:{ht:"Kijan pou antre nan yon kafou won",en:"How to enter a rotary"},steps:[
+  ["Ralanti lè w rive bò kafou won an epi gade siy yo pou chwazi vwa w.","Slow down as you approach the rotary and read the signs to choose your lane."],
+  ["Bay machin ki deja nan kafou won an ak pyeton yo dwa de pasaj.","Yield to vehicles already in the rotary and to pedestrians."],
+  ["Antre lè gen espas, epi woule nan sans kontrè egui yon revèy.","Enter when there is a gap and travel counterclockwise."],
+  ["Mete siyal adwat anvan sòti w.","Use your right signal before your exit."],
+  ["Si w rate sòti w, fè yon lòt wonn. Pa janm kanpe nan kafou won an.","If you miss your exit, go around again. Never stop in the rotary."]],
+  note:["Kafou won ak plizyè vwa san siy: pou yon ka vire oswa tou dwat, antre nan vwa dwat la; pou twa ka vire oswa demi-tou, antre nan vwa goch la.","Multi-lane rotary with no signs: for a quarter turn or straight, enter from the right lane; for a three-quarter turn or U-turn, enter from the left lane."]},
+ {t:"permit",free:0,g:"g-permit-c1",title:{ht:"Règ Lisans pou Jèn Chofè (JOL)",en:"Junior Operator License rules"},steps:[
+  ["Pa kondui ant 12:30 a.m. ak 5:00 a.m. san youn nan paran w oswa gadyen legal ou.","No driving from 12:30 a.m. to 5:00 a.m. unless a parent or legal guardian is with you."],
+  ["6 premye mwa yo: pa gen pasaje ki poko gen 18 an ki pa fanmi pwòch, sof si yon chofè 21 an oswa plis ki gen omwen yon ane eksperyans chita bò kote w.","First 6 months: no passengers under 18 who are not immediate family, unless a licensed driver 21 or older with at least one year of experience sits beside you."],
+  ["Poko gen 18 an: pa sèvi ak okenn aparèy elektwonik mobil, menm san men.","Under 18: no mobile electronic devices at all, even hands-free."],
+  ["Si w vyole règ pasaje oswa règ lannwit lan: sispansyon 60 jou premye fwa, 180 jou dezyèm fwa, yon ane apre sa.","Breaking the passenger or night rule: 60-day suspension the first time, 180 days the second, one year after that."]],
+  note:["Sous: Mànyèl Chofè Massachusetts (RMV, avril 2026), paj 10–11.","Source: Massachusetts Driver's Manual (RMV, April 2026), pages 10–11."]},
+ {t:"cdl",free:1,title:{ht:"Tès fuit fren lè",en:"Air brake leak test"},steps:[
+  ["Ak sistèm nan chaje nèt (anviwon 125 psi), etenn motè a epi lage fren pakin nan.","With the system fully charged (about 125 psi), shut off the engine and release the parking brake."],
+  ["Kontwole presyon an pandan 1 minit: pèt la dwe mwens pase 2 psi (yon sèl machin) oswa 3 psi (konbinezon).","Time the pressure for 1 minute: loss should be under 2 psi (single vehicle) or 3 psi (combination)."],
+  ["Peze pedal fren an fèm epi kenbe l 1 minit: apre premye bès la, pèt la pa dwe depase 3 psi (yon sèl) oswa 4 psi (konbinezon).","Apply firm pressure to the brake pedal for 1 minute: after the first drop, loss should not exceed 3 psi (single) or 4 psi (combination)."],
+  ["Bat pedal la pou desann presyon an: alam presyon ba a dwe limen anvan 60 psi.","Fan off the air: the low-pressure warning should come on before 60 psi."],
+  ["Kontinye: fren resò yo dwe mete ant 20 ak 45 psi.","Keep going: the spring brakes should apply between 20 and 45 psi."]],
+  note:["Chif yo baze sou manyèl CDL modèl la. Tcheke manyèl leta w la.","Figures follow the model CDL manual. Check your state's manual."]},
+ {t:"cdl",free:0,title:{ht:"Kote pou mete triyang avètisman",en:"Placing warning triangles"},steps:[
+  ["Limen limyè ijans kat bò yo touswit.","Turn on your four-way flashers right away."],
+  ["Wout 2 liy: youn a 10 pye dèyè, youn a 100 pye dèyè, youn a 100 pye devan.","Two-lane road: one at 10 feet behind, one at 100 feet behind, one at 100 feet ahead."],
+  ["Otowout yon sèl sans oswa divize: 10, 100 ak 200 pye dèyè, nan direksyon sikilasyon an.","One-way or divided highway: 10, 100 and 200 feet behind, toward approaching traffic."],
+  ["Mete yo anvan 10 minit apre w kanpe.","Place them within 10 minutes of stopping."]],
+  note:["Si gen yon koub oswa yon mòn, mete yon triyang pi lwen pou chofè yo wè l a tan.","Near a curve or hill, place one farther back so drivers see it in time."]}
+];
+
+/* ---------- Study guides: each block is [type, ht, en] ; type p=paragraph, li=list item, n=numbered item ---------- */
+const GUIDES=[
+ {id:"g-cna-inf",t:"cna",free:1,title:{ht:"Kontwòl enfeksyon",en:"Infection control"},
+  blueprint:{ht:"Egzamen ekri MA: 4 kesyon sou 60 soti nan sijè sa a. Lave men parèt nan chak tès konpetans.",en:"MA written exam: 4 of 60 questions come from this topic. Handwashing is part of every skills test."},
+  check:["cna14","cna15","cna16","cna17","cna18"],src:["S1","S2","S3","S4","S5"],
+  sections:[
+   {h:{ht:"Chèn enfeksyon an",en:"The chain of infection"},src:["S1"],b:[
+    ["p","Yon enfeksyon pase de yon moun a yon lòt nan sis etap ki rele chèn enfeksyon an. Si w kase nenpòt maiyon, enfeksyon an pa ka pase.","An infection spreads through six links called the chain of infection. Break any one link and the infection cannot spread."],
+    ["n","Mikwòb (infectious agent): bakteri, viris, chanpiyon oswa parazit ki lakòz maladi. Ou kase l lè w netwaye epi dezenfekte.","Infectious agent: bacteria, viruses, fungi or parasites that cause disease. You break it by cleaning and disinfecting."],
+    ["n","Rezèvwa (reservoir): kote mikwòb la viv epi miltipliye, tankou yon moun malad, yon bèt oswa dlo ki chita. Yon moun ka pote mikwòb san l pa malad (carrier). Ou kase l lè w kenbe anviwònman an pwòp epi manyen twal sal yo byen.","Reservoir: where the germ lives and multiplies, such as a sick person, an animal or standing water. A person can carry a germ without being sick (a carrier). You break it by keeping the environment clean and handling soiled linens safely."],
+    ["n","Pòt sòti (portal of exit): kijan mikwòb la soti, tankou nen, bouch oswa yon blesi. Ou kase l lè w kouvri touse epi kenbe likid kò yo fèmen.","Portal of exit: how the germ leaves, such as the nose, mouth or a wound. You break it by covering coughs and containing body fluids."],
+    ["n","Mòd transmisyon (mode of transmission): kijan mikwòb la vwayaje: kontak, gout oswa lè. Se maiyon ou kontwole plis la: lave men w epi mete PPE.","Mode of transmission: how the germ travels: by contact, droplets or air. This is the link you control most: hand hygiene and PPE."],
+    ["n","Pòt antre (portal of entry): kote mikwòb la antre nan yon lòt moun, tankou po ki blese, bouch, oswa yon sonn pipi (catheter). Ou kase l lè w pwoteje po a epi fè swen katetè ak swen pati entim byen.","Portal of entry: where the germ gets into a new person, such as broken skin, the mouth or a urinary catheter. You break it by protecting the skin and giving catheter and perineal care correctly."],
+    ["n","Moun ki fasil pran l (susceptible host): moun ki gen defans fèb, tankou granmoun 65 an oswa plis ak moun ki gen maladi kwonik tankou dyabèt. Prèske tout rezidan fè pati gwoup sa a.","Susceptible host: a person with weak defenses, such as adults 65 and older and people with chronic illness like diabetes. Nearly every resident is in this group."]]},
+   {h:{ht:"Ijyèn men",en:"Hand hygiene"},src:["S3","S5"],b:[
+    ["p","Ijyèn men se pi bon fason pou anpeche enfeksyon pase. Gen de fason: savon ak dlo, oswa yon dezenfektan men ki gen alkòl.","Hand hygiene is the best way to stop infections from spreading. There are two ways: soap and water, or an alcohol-based hand sanitizer."],
+    ["li","Sèvi ak savon ak dlo lè men w sal yon fason ou ka wè, anvan w manje, apre w sèvi ak twalèt, epi lè yon rezidan gen C. diff oswa norovirus.","Use soap and water when your hands are visibly soiled, before eating, after using the restroom, and when a resident has C. diff or norovirus."],
+    ["li","Nan pifò lòt sitiyasyon, dezenfektan ki gen omwen 60% alkòl prefere. Fwote tout pati men w jiskaske yo sèk, anviwon 20 segonn.","In most other situations, sanitizer with at least 60% alcohol is preferred. Rub all surfaces until your hands are dry, about 20 seconds."],
+    ["li","Sou egzamen konpetans Massachusetts la, ou dwe fwote men w ak savon omwen 20 segonn. Se yon etap kle nan tès la.","On the Massachusetts skills test, you must scrub with soap for at least 20 seconds. It is a key step on the test."],
+    ["p","Lè pou fè ijyèn men:","When to clean your hands:"],
+    ["li","Anvan w touche yon rezidan.","Right before touching a resident."],
+    ["li","Lè w pase de yon pati sal rive nan yon pati pwòp sou menm rezidan an.","When moving from a soiled to a clean body area on the same resident."],
+    ["li","Apre w touche yon rezidan oswa bagay ki bò kote l.","After touching a resident or their surroundings."],
+    ["li","Apre kontak ak san, likid kò oswa sifas ki kontamine.","After contact with blood, body fluids or contaminated surfaces."],
+    ["li","Touswit apre w retire gan.","Right after removing gloves."]]},
+   {h:{ht:"Prekosyon estanda",en:"Standard precautions"},src:["S1","S2"],b:[
+    ["p","Prekosyon estanda yo pou tout rezidan, chak fwa. Konsidere tout san, tout likid kò (sòf swè), po ki blese ak andedan nen, bouch ak je kòm si yo ka gen mikwòb.","Standard precautions apply to every resident, every time. Treat all blood, body fluids (except sweat), broken skin and mucous membranes as if they could carry germs."],
+    ["li","Ijyèn men.","Hand hygiene."],
+    ["li","PPE lè w ka ekspoze a san oswa likid kò.","PPE when you could be exposed to blood or body fluids."],
+    ["li","Ijyèn respiratwa: kouvri touse ak estènye.","Respiratory hygiene: cover coughs and sneezes."],
+    ["li","Netwaye ak dezenfekte ekipman ak anviwònman an.","Clean and disinfect equipment and the environment."],
+    ["li","Manyen twal ak lenn sal avèk prekosyon.","Handle soiled linens and laundry carefully."]]},
+   {h:{ht:"Prekosyon selon transmisyon",en:"Transmission-based precautions"},src:["S1","S2"],b:[
+    ["p","Yo ajoute prekosyon sa yo sou prekosyon estanda yo lè yon rezidan gen yon enfeksyon, oswa yo sispèk li genyen youn.","These are added on top of standard precautions when a resident has, or may have, an infection."],
+    ["li","Kontak: gan ak rad izolasyon. Egzanp: C. diff, MRSA.","Contact: gloves and gown. Examples: C. diff, MRSA."],
+    ["li","Gout (droplet): yon mask. Egzanp: grip. Gout yo ka vwayaje anviwon 6 pye.","Droplet: a mask. Example: the flu. Droplets can travel about 6 feet."],
+    ["li","Lè (airborne): yon respiratè tankou N95 ak yon chanm espesyal. Egzanp: tibèkiloz, lawoujòl.","Airborne: a respirator such as an N95 and a special room. Examples: tuberculosis, measles."],
+    ["p","Ensiy sou pòt la pa di non maladi a, pou pwoteje vi prive rezidan an. Si w pa konnen ki PPE pou w mete, mande enfimyè a anvan w antre.","The sign on the door does not name the disease, to protect the resident's privacy. If you are not sure which PPE to wear, ask the nurse before you go in."]]},
+   {h:{ht:"Mete ak retire PPE",en:"Putting on and taking off PPE"},src:["S1","S4"],b:[
+    ["p","Lòd la enpòtan. Swiv sekans CDC a.","Order matters. Follow the CDC sequence."],
+    ["p","Pou mete: 1. Rad izolasyon · 2. Mask oswa respiratè · 3. Linèt oswa visyè · 4. Gan, rale sou manch rad la.","Putting on: 1. Gown · 2. Mask or respirator · 3. Goggles or face shield · 4. Gloves, pulled over the gown cuffs."],
+    ["p","Pou retire: 1. Gan · 2. Linèt oswa visyè · 3. Rad izolasyon · 4. Mask oswa respiratè · 5. Ijyèn men touswit.","Taking off: 1. Gloves · 2. Goggles or face shield · 3. Gown · 4. Mask or respirator · 5. Hand hygiene right away."],
+    ["li","Devan rad izolasyon an ak devan mask la sal. Pa touche yo lè w ap retire yo.","The front of the gown and the front of the mask are contaminated. Do not touch them when you take them off."],
+    ["p","Kijan pou retire gan:","How to remove gloves:"],
+    ["n","Pran deyò yon gan toupre ponyèt la, san w pa touche po w.","Grab the outside of one glove near the wrist without touching your skin."],
+    ["n","Rale l soti, pou l vire andedan deyò. Kenbe l nan men ki gen gan an.","Peel it off so it turns inside out. Hold it in your gloved hand."],
+    ["n","Glise dwèt men ki toutouni an anndan lòt gan an, nan ponyèt la.","Slide the fingers of your bare hand inside the other glove at the wrist."],
+    ["n","Rale l soti andedan deyò, sou premye gan an.","Peel it off inside out, over the first glove."],
+    ["n","Jete yo, epi fè ijyèn men touswit.","Throw them away and clean your hands right away."]]},
+   {h:{ht:"Siy enfeksyon pou w rapòte",en:"Signs of infection to report"},src:["S1"],b:[
+    ["li","Siy lokal: wouj, cho, anfle, fè mal, oswa likid jòn oswa vèt k ap soti nan yon blesi.","Local signs: redness, warmth, swelling, tenderness, or yellow or green drainage from a wound."],
+    ["li","Siy nan tout kò a: lafyèv (100.4°F oswa plis), santi l pa byen, pa gen apeti, kè ak respirasyon ki bat pi vit.","Whole-body signs: fever (100.4°F or higher), feeling unwell, loss of appetite, faster heart rate and breathing."],
+    ["li","Granmoun ka pa gen lafyèv. Yon konfizyon ki fèk parèt oswa yon feblès toudenkou ka se sèl siy lan.","Older adults may not get a fever. New confusion or sudden weakness may be the only sign."],
+    ["li","Lòt bagay pou rapòte: touse oswa souf kout ki fèk parèt; pipi twoub, ak san, ak move sant, oswa ki fè mal; dyare oswa vomi.","Also report: a new cough or shortness of breath; urine that is cloudy, bloody, foul-smelling or painful; diarrhea or vomiting."],
+    ["p","Ou pa fè dyagnostik. Ou obsève, epi ou rapòte bay enfimyè a touswit.","You do not diagnose. You observe, and you report to the nurse right away."]]}],
+  terms:[["chain of infection","chèn enfeksyon"],["standard precautions","prekosyon estanda"],["transmission-based precautions","prekosyon selon transmisyon"],["isolation","izolasyon"],["alcohol-based hand sanitizer","dezenfektan men ak alkòl"],["contaminated","kontamine"],["disinfect","dezenfekte"],["respirator (N95)","respiratè (N95)"],["drainage","likid k ap koule"]]}
+];
+
+GUIDES.forEach(g=>{if(!g.n)g.n=1});
+
+/* ---------- Source registry (mirrors content/SOURCES.md) ---------- */
+const SRC={
+ S1:{name:"Nursing Assistant (Reuter, WisTech Open / Open RN)",url:"https://med.libretexts.org/Bookshelves/Nursing/Nursing_Assistant_(Reuter)",lic:"CC BY 4.0"},
+ S2:{name:"CDC: Standard Precautions",url:"https://www.cdc.gov/infection-control/hcp/basics/standard-precautions.html",lic:"US public domain"},
+ S3:{name:"CDC: Hand Hygiene for Healthcare Personnel",url:"https://www.cdc.gov/clean-hands/hcp/clinical-safety/index.html",lic:"US public domain"},
+ S4:{name:"CDC: Sequence for Donning and Removing PPE",url:"https://www.miemss.org/home/Portals/0/Docs/Infectious_Diseases/Poster-CDC-Donning-and-Doffing-PPE-20200305.2p.pdf",lic:"US public domain"},
+ S5:{name:"MA Nurse Aide Candidate Handbook (D&S / Headmaster)",url:"https://hdmaster.com/testing/cnatesting/Massachusetts/forms/MA%20NA%20Candidate%20Handbook%202.2025.pdf",lic:"Facts only, linked"},
+ S6:{name:"42 CFR 484.80 (home health aide training)",url:"https://www.law.cornell.edu/cfr/text/42/484.80",lic:"US public domain"},
+ S7:{name:"Massachusetts Driver's Manual, Class D (RMV, April 2026)",url:"https://www.mass.gov/lists/drivers-manuals",lic:"Facts only, linked"},
+ S8:{name:"Massachusetts CDL Manual (March 2025)",url:"https://www.mass.gov/doc/cdl-manual-march-2025-version/download",lic:"Facts only, linked"},
+ S9:{name:"FMCSA Training Provider Registry factsheet",url:"https://tpr.fmcsa.dot.gov/content/Resources/FMCSA-TPR-Factsheet.pdf",lic:"US public domain"},
+ S10:{name:"mass.gov: speed limits, car seats, Junior Operator rules",url:"https://www.mass.gov/info-details/teen-drivers",lic:"Facts only, linked"},
+ S11:{name:"FDA: Best Way to Get Rid of Used Needles and Other Sharps",url:"https://www.fda.gov/medical-devices/safely-using-sharps-needles-and-syringes-home-work-and-travel/best-way-get-rid-used-needles-and-other-sharps",lic:"US public domain"},
+ S12:{name:"CMS State Operations Manual, Appendix B (Home Health), Rev. 245",url:"https://www.cms.gov/Regulations-and-Guidance/Guidance/Manuals/downloads/som107ap_b_hha.pdf",lic:"US public domain"},
+ S13:{name:"CDC: Signs and Symptoms of Stroke",url:"https://www.cdc.gov/stroke/signs-symptoms/index.html",lic:"US public domain"},
+ S14:{name:"MedlinePlus: Choking (adult or child over 1 year)",url:"https://medlineplus.gov/ency/article/000049.htm",lic:"Facts only, linked (A.D.A.M. content)"},
+ S15:{name:"FoodSafety.gov: Cold Food Storage Chart",url:"https://www.foodsafety.gov/food-safety-charts/cold-food-storage-charts",lic:"US public domain"},
+ S16:{name:"American Caregiver Association: How to become an HHA",url:"https://americancaregiverassociation.org/how-to-become-a-home-health-aide-hha-step-by-step/",lic:"Facts only, linked"},
+ S17:{name:"U.S. Fire Administration: Cooking safety flyer",url:"https://www.usfa.fema.gov/downloads/fief/handouts/fief_cooking_safety_flyer.pdf",lic:"US public domain"},
+ S18:{name:"Mayo Clinic: Hypertensive crisis",url:"https://www.mayoclinic.org/diseases-conditions/high-blood-pressure/expert-answers/hypertensive-crisis/faq-20058491",lic:"Facts only, linked"},
+ S19:{name:"USDA FSIS: Leftovers and Food Safety",url:"https://www.fsis.usda.gov/food-safety/safe-food-handling-and-preparation/food-safety-basics/leftovers-and-food-safety",lic:"US public domain"},
+ S20:{name:"42 CFR 483.12 (freedom from abuse, neglect and restraints)",url:"https://www.law.cornell.edu/cfr/text/42/483.12",lic:"US public domain"},
+ S21:{name:"42 CFR 483.35 (nurse aide training and the 24-month rule)",url:"https://www.law.cornell.edu/cfr/text/42/483.35",lic:"US public domain"},
+ S22:{name:"42 CFR 483.95 (nurse aide in-service training)",url:"https://www.law.cornell.edu/cfr/text/42/483.95",lic:"US public domain"},
+ S23:{name:"NIMH: Warning Signs of Suicide",url:"https://www.nimh.nih.gov/health/publications/warning-signs-of-suicide",lic:"US public domain"},
+ S24:{name:"NIDCD: Aphasia",url:"https://www.nidcd.nih.gov/health/aphasia",lic:"US public domain"},
+ S25:{name:"42 CFR 483.10 (resident rights)",url:"https://www.law.cornell.edu/cfr/text/42/483.10",lic:"US public domain"},
+ S26:{name:"42 CFR 483.5 (definitions, including abuse)",url:"https://www.law.cornell.edu/cfr/text/42/483.5",lic:"US public domain"},
+ S27:{name:"CMS S&C 16-33-NH: staff photos and recordings of residents",url:"https://www.cms.gov/medicare/provider-enrollment-and-certification/surveycertificationgeninfo/policy-and-memos-to-states-and-regions-items/survey-and-cert-letter-16-33",lic:"US public domain"},
+ S28:{name:"105 CMR 775 (MA certified medication aides)",url:"https://www.mass.gov/regulations/105-CMR-77500-certified-medication-aides-in-long-term-care-facilities",lic:"Facts only, linked"},
+ S29:{name:"42 CFR 483.152 (nurse aide training curriculum)",url:"https://www.law.cornell.edu/cfr/text/42/483.152",lic:"US public domain"},
+ S30:{name:"Mass.gov: Change your address with the RMV",url:"https://www.mass.gov/how-to/change-your-address-with-the-rmv",lic:"Facts only, linked"},
+ S31:{name:"Mass.gov: Work and Family Mobility Act FAQs",url:"https://www.mass.gov/info-details/work-and-family-mobility-act-faqs",lic:"Facts only, linked"}
+};
+
+/* ---------- Glossary [EN, HT, track] ---------- */
+const GL=[
+ ["hand hygiene","ijyèn men","CNA"],["gloves","gan","CNA"],["gown","rad izolasyon","CNA"],["resident","rezidan","CNA"],
+ ["vital signs","siy vital","CNA"],["blood pressure","tansyon","CNA"],["pulse","pou","CNA"],["temperature","tanperati","CNA"],
+ ["pressure injury (bedsore)","blesi presyon (eska)","CNA"],["bedpan","basen","CNA"],["call light","bouton apèl","CNA"],
+ ["gait belt","senti mache","CNA"],["intake and output","sa k antre ak sa k soti","CNA"],["confidentiality","konfidansyalite","CNA"],
+ ["care plan","plan swen","HHA"],["client","kliyan","HHA"],["supervisor","sipèvizè","HHA"],["abuse","abi","HHA"],
+ ["neglect","neglijans","HHA"],["walker","machin pou mache (walker)","HHA"],["cane","baton","HHA"],["grab bar","ba pou kenbe","HHA"],
+ ["right-of-way","dwa de pasaj","PÈMI"],["yield","bay dwa de pasaj","PÈMI"],["rotary","kafou won","PÈMI"],["headlights","limyè devan","PÈMI"],
+ ["crosswalk","pasaj pyeton","PÈMI"],["speed limit","limit vitès","PÈMI"],["learner's permit","pèmi apranti","PÈMI"],
+ ["merge","antre nan sikilasyon","PÈMI"],["air brakes","fren lè","CDL"],["pre-trip inspection","enspeksyon anvan vwayaj","CDL"],
+ ["following distance","distans dèyè","CDL"],["downgrade","desant","CDL"],["cargo","chajman","CDL"],["tread","tras kawotchou","CDL"],
+ ["hazardous materials","matyè danjere","CDL"],["four-way flashers","limyè ijans kat bò","CDL"]
+];
+
+/* ---------- State ---------- */
+const KEY="pase:v1"; /* storage key kept from the app's first name so saved progress carries over */
+function load(){const d={lang:"both",premium:false,hist:{}};try{const s=JSON.parse(localStorage.getItem(KEY)||"{}");return Object.assign(d,s,{hist:Object.assign({},s.hist||{})})}catch(e){return d}}
+const S=load();
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+let V={view:"home"}, sess=null, timer=null;
+const byId=id=>Q.find(x=>x.id===id);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+/* Language modes: ht (Kreyòl), both (Kreyòl + English), fr (Français + English), es (Español + English), en (English).
+   French and Spanish come from data/i18n-*.js, keyed by the English string; a missing entry falls back to English. */
+const LANGS=["ht","both","fr","es","en"];
+const isX=()=>S.lang==="fr"||S.lang==="es";
+const TX=en=>{const d=(window.I18N||{})[S.lang];return d?d[en]:undefined};
+/* Load data/i18n-fr.js or -es.js only when that mode is chosen; until it arrives the page shows English. */
+function needLang(l,done){if(!(l==="fr"||l==="es")||(window.I18N&&window.I18N[l]))return done();
+ const sc=document.createElement("script");sc.src="data/i18n-"+l+".js";sc.onload=done;sc.onerror=done;document.head.appendChild(sc)}
+const U=k=>isX()?(TX(UI.en[k])||UI.en[k]):(S.lang==="en"?UI.en:UI.ht)[k];
+function L(ht,en){if(S.lang==="en")return esc(en);if(S.lang==="ht")return esc(ht);
+ const a=isX()?TX(en):ht; /* show the English line only when it adds something */
+ return !a||a===en?esc(en):esc(a)+'<span class="en">'+esc(en)+'</span>'}
+const P=o=>S.lang==="en"?o.en:isX()?(TX(o.en)||o.en):o.ht; /* one plain string, no English line */
+const LT=(en,ht)=>isX()?(TX(en)||en):ht; /* the term's meaning shown next to the English term */
+const W=o=>o[S.lang==="both"?"ht":S.lang]||o.en;
+const LO=o=>L(o.ht,o.en);
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function trackStats(t){const qs=Q.filter(x=>x.t===t);let done=0,ok=0,miss=0;qs.forEach(x=>{const h=S.hist[x.id];if(h){done++;if(h.ok)ok++;else miss++}});return{total:qs.length,done,ok,miss,free:qs.filter(x=>x.free).length}}
+const lockIcon='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>';
+const spk='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 010 7M18.5 5.5a9 9 0 010 13"/></svg>';
+
+/* ---------- HHA: build guides, questions and skill cards from data/hha-*.js ---------- */
+(function(){
+ const H=(window.HHA||[]).slice().sort((a,b)=>a.ch-b.ch);if(!H.length)return;
+ const ob=a=>({ht:a[0],en:a[1]});
+ TR.hha.topics={};
+ const FREE_CH=[1,4];
+ H.forEach(c=>{
+  const tp="c"+c.ch,gid="g-hha-c"+c.ch,full=FREE_CH.includes(c.ch);
+  TR.hha.topics[tp]=ob(c.title);
+  const SEC=window.HHA_SEC||{};c.qs.forEach((x,i)=>{q(x[0],"hha",tp,x[1],full||i===0?1:0,x[2],x[3],x[4]);const o=Q[Q.length-1];o.g=gid;o.s=SEC[x[0]]!==undefined?SEC[x[0]]:0});
+  GUIDES.push({id:gid,t:"hha",n:c.ch,free:full?1:0,observed:!!c.observed,title:ob(c.title),
+   blueprint:{ht:"Sijè obligatwa #"+c.ch+" nan fòmasyon federal ed swen a domisil (42 CFR 484.80"+c.cfr+")."+(c.observed?" Enfimyè a dwe gade w fè konpetans sa yo.":""),
+              en:"Required subject #"+c.ch+" in federal home health aide training (42 CFR 484.80"+c.cfr+")."+(c.observed?" A nurse must watch you perform these skills.":"")},
+   check:c.qs.slice(0,5).map(x=>x[0]),src:c.src,
+   sections:c.sections.map(s=>({h:ob(s.h),src:s.src,b:s.b})),terms:c.terms});
+  (c.skillRefs||[]).forEach(r=>{if(r==="handwashing"){const w=LS.find(l=>l.t==="cna"&&l.title.en.startsWith("Handwashing"));if(w)LS.push(Object.assign({},w,{t:"hha",free:1,g:gid}))}});
+  (c.skills||[]).forEach((k,i)=>LS.push({t:"hha",free:full||(i===0&&c.ch===6)?1:0,g:gid,title:ob(k.title),steps:k.steps,note:k.note}));
+  c.terms.forEach(t=>{if(!GL.some(g=>g[0].toLowerCase()===t[0].toLowerCase()))GL.push([t[0],t[1],"HHA"])});
+ });
+})();
+
+/* ---------- CNA: Massachusetts outline (data/ma-cna.js), CNA chapters (data/cna-a.js), and HHA questions reused as "c-<id>" ---------- */
+(function(){
+ const M=window.MA_CNA;if(!M)return;
+ const ob=a=>({ht:a[0],en:a[1]});
+ TR.cna.topics={};TR.cna.blueprint={};M.areas.forEach(a=>{TR.cna.topics[a.id]={ht:a.ht,en:a.en};TR.cna.blueprint[a.id]=a.n});
+ TR.cna.exam=M.exam;
+ Q.forEach(x=>{if(x.t==="cna"&&M.map[x.id])x.tp=M.map[x.id]});
+ const CS=window.CNA_SEC||{};
+ (window.CNA||[]).slice().sort((a,b)=>a.ch-b.ch).forEach(c=>{
+  const gid="g-cna-c"+c.ch;
+  c.qs.forEach((x,i)=>{q(x[0],"cna",M.map[x[0]],x[1],i===0?1:0,x[2],x[3],x[4]);const o=Q[Q.length-1];o.g=gid;o.s=CS[x[0]]||0});
+  GUIDES.push({id:gid,t:"cna",n:c.ch,free:0,title:ob(c.title),blueprint:ob(c.bp),check:c.qs.slice(0,5).map(x=>x[0]),src:c.src,
+   sections:c.sections.map(s=>({h:ob(s.h),src:s.src,b:s.b})),terms:c.terms});
+  c.terms.forEach(t=>{if(!GL.some(g=>g[0].toLowerCase()===t[0].toLowerCase()))GL.push([t[0],t[1],"CNA"])});
+ });
+ /* the first CNA questions (inline above) point to the guide section that states their fact */
+ const LEGACY={cna1:["g-cna-inf",1],cna2:["g-cna-inf",4],cna3:["g-hha-c10",4],cna4:["g-cna-c5",3],cna5:["g-hha-c8",5],cna6:["g-hha-c9",8],cna7:["g-hha-c9",7],
+  cna8:["g-hha-c3",1],cna9:["g-hha-c3",2],cna10:["g-hha-c12",2],cna11:["g-hha-c11",3],cna12:["g-hha-c1",3],cna13:["g-hha-c2",3]};
+ Q.forEach(x=>{const m=LEGACY[x.id];if(m&&GUIDES.some(g=>g.id===m[0])){x.g=m[0];x.s=m[1]}});
+ Q.filter(x=>x.t==="hha"&&M.map[x.id]).forEach(x=>Q.push(Object.assign({},x,{id:"c-"+x.id,t:"cna",tp:M.map[x.id],from:x.id})));
+})();
+
+/* ---------- Permit: guide chapters, questions and FAQ from data/permit-a.js (Massachusetts Driver's Manual, April 2026) ---------- */
+(function(){
+ const P=(window.PERMIT||[]).slice().sort((a,b)=>a.ch-b.ch);if(!P.length)return;
+ const ob=a=>({ht:a[0],en:a[1]}),PS=window.PERMIT_SEC||{},FREE_CH=[1];
+ TR.permit.topics={};TR.permit.blueprint={c1:3,c2:3,c3:3,c4:3,c5:3,c6:4,c7:4,c8:2};
+ P.forEach(c=>{
+  const tp="c"+c.ch,gid="g-permit-c"+c.ch,full=FREE_CH.includes(c.ch);
+  TR.permit.topics[tp]=ob(c.title);
+  c.qs.forEach((x,i)=>{q(x[0],"permit",tp,x[1],full||i===0?1:0,x[2],x[3],x[4]);const o=Q[Q.length-1];o.g=gid;o.s=PS[x[0]]||0;if(x[5])o.sign=x[5]});
+  GUIDES.push({id:gid,t:"permit",n:c.ch,free:full?1:0,title:ob(c.title),blueprint:ob(c.bp),check:c.qs.slice(0,5).map(x=>x[0]),src:c.src,
+   sections:c.sections.map(s=>({h:ob(s.h),src:s.src,pg:s.pg,sign:s.sign,b:s.b})),terms:c.terms});
+  c.terms.forEach(t=>{if(!GL.some(g=>g[0].toLowerCase()===t[0].toLowerCase()&&g[2]==="PÈMI"))GL.push([t[0],t[1],"PÈMI"])});
+ });
+})();
+const FAQS={hha:()=>window.HHA_FAQ,permit:()=>window.PERMIT_FAQ};
+const faqOf=t=>FAQS[t]&&FAQS[t]()||null;
+/* Road signs drawn to MUTCD shapes and colors (no text that gives the answer away beyond the sign's own legend). */
+const SIGN={
+ stop:'<polygon points="29,2 71,2 98,29 98,71 71,98 29,98 2,71 2,29" fill="#C8102E"/><polygon points="31,7 69,7 93,31 93,69 69,93 31,93 7,69 7,31" fill="none" stroke="#fff" stroke-width="3"/><text x="50" y="59" font-size="25" font-weight="700" fill="#fff" text-anchor="middle" font-family="Arial,Helvetica,sans-serif">STOP</text>',
+ yield:'<polygon points="3,8 97,8 50,94" fill="#C8102E"/><polygon points="25,21 75,21 50,66" fill="#fff"/><text x="50" y="35" font-size="12" font-weight="700" fill="#C8102E" text-anchor="middle" font-family="Arial,Helvetica,sans-serif">YIELD</text>',
+ rr:'<circle cx="50" cy="50" r="47" fill="#FFCC00" stroke="#111" stroke-width="3"/><path d="M22 22L78 78M78 22L22 78" stroke="#111" stroke-width="8"/><text x="25" y="58" font-size="20" font-weight="700" fill="#111" text-anchor="middle" font-family="Arial,Helvetica,sans-serif">R</text><text x="75" y="58" font-size="20" font-weight="700" fill="#111" text-anchor="middle" font-family="Arial,Helvetica,sans-serif">R</text>',
+ school:'<polygon points="50,3 97,40 97,97 3,97 3,40" fill="#C6E23A" stroke="#111" stroke-width="3"/><g fill="#111"><circle cx="38" cy="45" r="6"/><circle cx="62" cy="50" r="5"/></g><g stroke="#111" stroke-width="6" stroke-linecap="round" fill="none"><path d="M38 53v18M38 71l-7 14M38 71l7 14M38 58l-9 9M38 58l9 7"/><path d="M62 57v15M62 72l-6 12M62 72l6 12M62 61l-8 7M62 61l7 7"/></g>',
+ curve:'<polygon points="50,2 98,50 50,98 2,50" fill="#FFCC00" stroke="#111" stroke-width="3"/><path d="M42 76V52c0-10 6-14 14-20" stroke="#111" stroke-width="7" fill="none"/><polygon points="50,24 66,26 58,40" fill="#111"/>',
+ nouturn:'<rect x="4" y="4" width="92" height="92" rx="6" fill="#fff" stroke="#111" stroke-width="3"/><path d="M38 78V44a12 12 0 0124 0v12" stroke="#111" stroke-width="8" fill="none"/><polygon points="52,54 72,54 62,70" fill="#111"/><circle cx="50" cy="50" r="36" fill="none" stroke="#C8102E" stroke-width="7"/><path d="M25 25L75 75" stroke="#C8102E" stroke-width="7"/>',
+ work:'<polygon points="50,2 98,50 50,98 2,50" fill="#F47B20" stroke="#111" stroke-width="3"/><circle cx="46" cy="28" r="6" fill="#111"/><g stroke="#111" stroke-width="6" stroke-linecap="round" fill="none"><path d="M46 36v22M46 58l-8 16M46 58l8 16M46 42l14 8M46 42l-10 10"/></g><path d="M60 50l8 22" stroke="#111" stroke-width="3"/><path d="M62 72h14" stroke="#111" stroke-width="5"/>',
+ smv:'<polygon points="50,6 97,90 3,90" fill="#C8102E"/><polygon points="50,24 82,80 18,80" fill="#F47B20"/>'
+};
+const signSvg=(k,cls)=>SIGN[k]?`<svg class="${cls||"sign"}" viewBox="0 0 100 100" role="img" aria-label="${esc(U("roadSign"))}">${SIGN[k]}</svg>`:"";
+/* Where a question's fact comes from: its guide section's sources and manual pages. */
+function qSrc(x){let ids,pg;if(x.g){const g=GUIDES.find(z=>z.id===x.g),sc=g&&g.sections[x.s];if(sc){ids=sc.src;pg=sc.pg}}
+ if(!ids){const g=GUIDES.find(g=>g.check.includes(x.id));if(g)ids=g.src}
+ if(!ids||!ids.length)return "";
+ return `<p class="cite">${esc(U("srcLabel"))}: ${ids.map(id=>SRC[id]?`<a href="${SRC[id].url}" target="_blank" rel="noopener">${esc(SRC[id].name)}</a>`:"").join(" · ")}${pg?`, ${esc(U("pg"))} ${esc(pg)}`:""}</p>`}
+
+/* Exam draw: follow the track's blueprint (questions per topic) when it has one; top up from other topics if a topic is short. */
+function examDraw(t,pool){
+ const tr=TR[t],ex=tr.exam||{n:10},bp=tr.blueprint;
+ if(!bp)return pool.slice(0,Math.min(ex.n,pool.length));
+ const pick=[],used=new Set();
+ Object.keys(bp).forEach(a=>pool.filter(x=>x.tp===a).slice(0,bp[a]).forEach(x=>{pick.push(x);used.add(x.id)}));
+ pool.forEach(x=>{if(pick.length<ex.n&&!used.has(x.id)){pick.push(x);used.add(x.id)}});
+ return shuffle(pick);
+}
+const fill=(str,o)=>String(str).replace(/\{(\w+)\}/g,(m,k)=>o[k]!==undefined?o[k]:m);
+const soonCodes=()=>Object.values(TR).filter(x=>x.soon).map(x=>x.code);
+
+/* ---------- UI strings for the one-exam layout, accounts and plans ---------- */
+Object.assign(UI.ht,{tabHome:"Akèy",tabLearn:"Aprann",tabPractice:"Pratike",tabAccount:"Kont",
+ obLang:"Ki lang ou pi alèz?",obLangSub:"Ou ka chanje l nenpòt lè.",obExam:"Ki egzamen w ap prepare?",obExamSub:"Ou ka chanje egzamen nan paj Kont ou.",
+ obDate:"Kilè egzamen w lan?",obDateSub:"Nou pral montre w konbyen jou ki rete. Si w pa konnen, pa gen pwoblèm.",obSkip:"Mwen pa konnen ankò",obGo:"Kòmanse",
+ prepFor:"W ap prepare pou",change:"Chanje",daysLeft:"jou anvan egzamen an",today:"Egzamen an se jodi a. Bòn chans!",
+ ready:"Preparasyon",mastered:"kesyon metrize",continue:"Kontinye",nextCh:"Pwochen chapit",quick:"Pratik rapid: 10 kesyon",
+ learnTitle:"Aprann",learnSub:"Gid, konpetans pratik ak mo kle pou egzamen ou.",skills:"Konpetans pratik",glossBtn:"Glosè",allTerms:"Montre mo tout egzamen yo",
+ pracTitle:"Pratike",byTopic:"Pa sijè",
+ acctTitle:"Kont",guest:"Ou pa konekte",guestSub:"Kreye yon kont gratis pou sove pwogrè w epi jwenn li sou nenpòt aparèy.",
+ signIn:"Konekte oswa kreye yon kont",signOut:"Dekonekte",plan:"Plan ou",free:"Gratis",exam_:"Egzamen",lang:"Lang",examDate:"Dat egzamen",
+ none:"Pa mete",reset:"Efase pwogrè mwen",resetQ:"Efase tout repons ou pou egzamen sa a?",manage:"Jere plan mwen",
+ authTitle:"Konekte",authSub:"Sove pwogrè w, achte Premium, epi kontinye sou telefòn oswa òdinatè.",email:"Imèl",sendLink:"Voye lyen pou konekte",google:"Kontinye ak Google",
+ authDemo:"Demo: pa gen sèvè ankò. Bouton yo konekte w sou aparèy sa a sèlman.",authWhy:"Nou pa janm vann enfòmasyon ou.",
+ saveNudge:"Sove pwogrè w: kreye yon kont gratis.",
+ upTitle:"Debloke tout",upSub:"Tout kesyon, tout chapit, simulasyon san limit, ak tout kat konpetans.",
+ passName:"Pakèt Egzamen",passPer:"yon sèl fwa · 90 jou",passFor:"Pou",monthName:"Tout Egzamen",monthPer:"/ mwa · anile nenpòt lè",
+ buy:"Achte",subscribe:"Abòne",needAcct:"Ou bezwen yon kont pou achte, konsa ou pa pèdi aksè w si w chanje telefòn.",
+ active:"Aktif",until:"jiska",schools:"Lekòl ak ajans: $15 pa elèv. Ekri nou.",demoBuy:"Demo: pa gen peman reyèl.",
+ switchTitle:"Chwazi egzamen ou",examFmt:"Egzamen konplè: {n} kesyon · {m} minit",shortPool:"Egzamen sa a gen {k} kesyon pou kounye a; vrè egzamen an gen {n}.",byArea:"Rezilta pa sijè",soon:"Byento",offline:"Ou pa sou entènèt. Ou ka toujou pratike.",alsoGuides:"Plis gid pou egzamen sa a (pataje ak HHA)",delAcct:"Efase kont mwen",delQ:"Efase kont ou ak tout done ou? Ou p ap ka anile sa.",switchSub:"Pwogrè chak egzamen sove apa."});
+Object.assign(UI.en,{tabHome:"Home",tabLearn:"Learn",tabPractice:"Practice",tabAccount:"Account",
+ obLang:"Which language do you prefer?",obLangSub:"You can change it anytime.",obExam:"Which exam are you preparing for?",obExamSub:"You can switch exams from your Account page.",
+ obDate:"When is your exam?",obDateSub:"We'll show how many days you have left. If you don't know yet, that's fine.",obSkip:"I don't know yet",obGo:"Start",
+ prepFor:"Preparing for",change:"Change",daysLeft:"days until your exam",today:"Your exam is today. Good luck!",
+ ready:"Readiness",mastered:"questions mastered",continue:"Continue",nextCh:"Next chapter",quick:"Quick practice: 10 questions",
+ learnTitle:"Learn",learnSub:"Guides, hands-on skills and key terms for your exam.",skills:"Hands-on skills",glossBtn:"Glossary",allTerms:"Show terms for all exams",
+ pracTitle:"Practice",byTopic:"By topic",
+ acctTitle:"Account",guest:"You're not signed in",guestSub:"Create a free account to save your progress and pick it up on any device.",
+ signIn:"Sign in or create an account",signOut:"Sign out",plan:"Your plan",free:"Free",exam_:"Exam",lang:"Language",examDate:"Exam date",
+ none:"Not set",reset:"Reset my progress",resetQ:"Erase all your answers for this exam?",manage:"Manage my plan",
+ authTitle:"Sign in",authSub:"Save your progress, buy Premium, and continue on your phone or computer.",email:"Email",sendLink:"Email me a sign-in link",google:"Continue with Google",
+ authDemo:"Demo: no server yet. These buttons sign you in on this device only.",authWhy:"We never sell your information.",
+ saveNudge:"Save your progress: create a free account.",
+ upTitle:"Unlock everything",upSub:"Every question, every chapter, unlimited timed exams, and every skill card.",
+ passName:"Exam Pass",passPer:"one time · 90 days",passFor:"For",monthName:"All Exams",monthPer:"/ month · cancel anytime",
+ buy:"Buy",subscribe:"Subscribe",needAcct:"You need an account to buy, so you keep access if you change phones.",
+ active:"Active",until:"until",schools:"Schools and agencies: $15 per student. Contact us.",demoBuy:"Demo: no real payment.",
+ switchTitle:"Choose your exam",examFmt:"Full exam: {n} questions · {m} minutes",shortPool:"This exam has {k} questions so far; the real test has {n}.",byArea:"Results by topic",soon:"Coming soon",offline:"You're offline. Practice still works.",alsoGuides:"More guides for this exam (shared with HHA)",delAcct:"Delete my account",delQ:"Delete your account and all your data? This cannot be undone.",switchSub:"Progress is saved separately for each exam."});
+
+/* Strings for the home score, topic bars and quiz bar (Oct 2026 redesign) */
+Object.assign(UI.ht,{estScore:"nòt ou estime",estNeed:"Reponn {k} kesyon ankò pou wè nòt ou estime.",passMark:"Pou pase: {p}%",estBasis:"Dapre {a} sou {b} sijè",examShort:"{n} kesyon · {m} minit",examFree:"Mini egzamen: 5 kesyon",missedSub:"{n} kesyon pou refè",focus:"Kote pou w travay",startHere:"Kòmanse la a",allTopics:"Tout sijè yo",notStarted:"Poko kòmanse",pctRight:"{p}% kòrèk",topicsSub:"Ba a montre pousantaj ou jwenn kòrèk. Mak jòn nan se nòt pou pase a ({p}%).",pickOne:"Chwazi yon repons",timeLeft:"Tan ki rete",verdictPass:"Nòt sa a ta pase.",verdictNeed:"Ou te bezwen {k} bon repons ankò pou pase.",retryWrong:"Refè {n} kesyon ou rate yo",reviewMistakes:"Gade erè yo ({n})"});
+Object.assign(UI.en,{estScore:"estimated score",estNeed:"Answer {k} more questions to see your estimated score.",passMark:"Pass: {p}%",estBasis:"Based on {a} of {b} topics",examShort:"{n} questions · {m} minutes",examFree:"Mini exam: 5 questions",missedSub:"{n} questions to retry",focus:"Where to focus",startHere:"Start here",allTopics:"All topics",notStarted:"Not started",pctRight:"{p}% right",topicsSub:"Each bar shows how many you get right. The gold mark is the passing score ({p}%).",pickOne:"Choose an answer",timeLeft:"Time left",verdictPass:"This score would pass.",verdictNeed:"You needed {k} more right answers to pass.",retryWrong:"Retry the {n} you missed",reviewMistakes:"See your mistakes ({n})"});
+
+Object.assign(UI.ht,{estCover:"Pratike nan {k} lòt sijè pou wè nòt ou estime.",verdictMini:"Mini egzamen {n} kesyon. Vrè egzamen an gen {N}."});
+Object.assign(UI.en,{estCover:"Practice {k} more topics to see your estimated score.",verdictMini:"A {n}-question mini exam. The real test has {N}."});
+
+/* ---------- Accounts and entitlements (demo adapter; swap for Supabase Auth + Stripe, see content/ACCOUNTS.md) ---------- */
+if(S.premium){S.ent=Object.assign({},S.ent,{all:"9999-12-31"});delete S.premium}
+S.ent=S.ent||{};
+const today0=()=>{const d=new Date();d.setHours(0,0,0,0);return d};
+const hasPrem=t=>["all",t].some(k=>S.ent[k]&&new Date(S.ent[k])>new Date());
+const avail=x=>hasPrem(x.t)||!!x.free;
+const Acct={
+ user:()=>S.user||null,
+ signInEmail(email){/* TODO: supabase.auth.signInWithOtp({email}) */S.user={email,name:email.split("@")[0],via:"email"};save()},
+ signInGoogle(){/* TODO: supabase.auth.signInWithOAuth({provider:"google"}) */S.user={email:"demo@gmail.com",name:"Demo",via:"google"};save()},
+ signOut(){/* TODO: supabase.auth.signOut() */S.user=null;save()},
+ buy(kind,t){/* TODO: create Stripe Checkout session on the server; entitlement is written by the webhook, never by the client */
+  const d=new Date();if(kind==="pass"){d.setDate(d.getDate()+90);S.ent[t]=d.toISOString().slice(0,10)}else{d.setMonth(d.getMonth()+1);S.ent.all=d.toISOString().slice(0,10)}save()}
+};
+const T=()=>S.track&&TR[S.track]&&!TR[S.track].soon?S.track:null;
+function daysLeft(){if(!S.examDate)return null;return Math.round((new Date(S.examDate+"T00:00:00")-today0())/864e5)}
+function topicStats(t,tp){const qs=Q.filter(x=>x.t===t&&x.tp===tp);let ok=0,done=0;qs.forEach(x=>{const h=S.hist[x.id];if(h){done++;if(h.ok)ok++}});return{total:qs.length,ok,done,avail:qs.filter(avail).length}}
+function nextGuide(t){const gs=GUIDES.filter(g=>g.t===t).sort((a,b)=>a.n-b.n);return gs.find(g=>!g.check.every(id=>S.hist[id]&&S.hist[id].ok))||null}
+const ic={home:'<path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/>',learn:'<path d="M4 5a2 2 0 012-2h13v16H6a2 2 0 00-2 2z"/><path d="M4 21V5"/><path d="M9 8h6M9 12h6"/>',
+ practice:'<path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h9"/>',account:'<circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/>',
+ chev:'<path d="M9 6l6 6-6 6"/>',down:'<path d="M6 9l6 6 6-6"/>'};
+const svg=(k,s=22)=>`<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ic[k]}</svg>`;
+const strip=h=>h.replace(/<span class="en">.*<\/span>/,"");
+
+/* Estimated score: accuracy on answered questions in each topic, weighted by the topic's share of the exam
+   (the CNA blueprint) or equally (HHA). Shown once the learner has answered EST_MIN questions. */
+const EST_MIN=20;
+function estimate(t){const tr=TR[t],bp=tr.blueprint,tops=Object.keys(tr.topics);let w=0,acc=0,done=0,cov=0;
+ tops.forEach(tp=>{const st=topicStats(t,tp);done+=st.done;if(!st.done)return;cov++;const k=bp?(bp[tp]||0):1;w+=k;acc+=k*st.ok/st.done});
+ return {done,cov,n:tops.length,pct:w?Math.round(acc/w*100):null}}
+/* The pass line: a bar with a brass tick at the passing score. v=null draws an empty bar. */
+const gauge=(v,p,cls="")=>`<div class="gauge ${cls}${v!==null&&v>=p?" pass":""}" style="--v:${v===null?0:v}%;--p:${p}%" aria-hidden="true"><i></i><b></b></div>`;
+function topicRow(t,tp){const tr=TR[t],st=topicStats(t,tp),p=Math.round(tr.pass*100),a=st.done?Math.round(st.ok/st.done*100):null;
+ return `<button type="button" class="topic" data-act="practice" data-v="${tp}"><span>${LO(tr.topics[tp])}</span><span class="cnt ${a!==null&&a>=p?"ok":""}">${a===null?esc(U("notStarted")):esc(fill(U("pctRight"),{p:a}))}${st.avail<st.total?" "+lockIcon:""}</span>${gauge(a,p,"sm")}</button>`}
+
+/* ---------- Views ---------- */
+const views={
+ onboard(){
+  const st=V.step||0;
+  const dots=`<div class="dots" aria-hidden="true">${[0,1,2].map(i=>`<i class="${i<=st?"on":""}"></i>`).join("")}</div>`;
+  if(st===0)return `${dots}<section><h1>${esc(U("obLang"))}</h1><p class="muted">${esc(U("obLangSub"))}</p></section>
+   <div class="choices">${[["ht","Kreyòl","Kreyòl sèlman"],["both","Kreyòl + English","Kreyòl ak Anglè bò kote"],["fr","Français + English","Français, avec l'anglais à côté"],["es","Español + English","Español, con el inglés al lado"],["en","English","English only"]].map(([v,a,b])=>`<button type="button" class="choice" data-act="obLang" data-v="${v}"><b>${a}</b><span class="muted small">${b}</span></button>`).join("")}</div>
+`;
+  if(st===1)return `${dots}<button type="button" class="back" data-act="obStep" data-v="0">${esc(U("back"))}</button><section><h1>${esc(U("obExam"))}</h1><p class="muted">${esc(U("obExamSub"))}</p></section>
+   <div class="choices">${Object.keys(TR).map(t=>TR[t].soon?`<div class="choice soon" aria-disabled="true"><span class="code">${TR[t].code}</span><span><b>${LO(TR[t].name)}</b><span class="pill lock">${esc(U("soon"))}</span></span></div>`:`<button type="button" class="choice" data-act="obExam" data-v="${t}"><span class="code">${TR[t].code}</span><span><b>${LO(TR[t].name)}</b></span></button>`).join("")}</div>`;
+  return `${dots}<button type="button" class="back" data-act="obStep" data-v="1">${esc(U("back"))}</button><section><h1>${esc(U("obDate"))}</h1><p class="muted">${esc(U("obDateSub"))}</p></section>
+   <label class="eyebrow" for="obd">${esc(U("examDate"))}</label><input id="obd" class="search" type="date" min="${today0().toISOString().slice(0,10)}" value="${S.examDate||""}">
+   <button type="button" class="btn full" data-act="obDone">${esc(U("obGo"))}</button>
+   <button type="button" class="btn ghost full" data-act="obSkip">${esc(U("obSkip"))}</button>`;
+ },
+ home(){
+  const t=T(),tr=TR[t],s=trackStats(t),dl=daysLeft(),g=nextGuide(t),prem=hasPrem(t),p=Math.round(tr.pass*100),e=estimate(t);
+  const ready=e.done>=EST_MIN&&e.cov>=Math.ceil(e.n/2)&&e.pct!==null,tops=Object.keys(tr.topics),bp=tr.blueprint||{};
+  const seen=tops.map(tp=>Object.assign({tp},topicStats(t,tp))).filter(x=>x.done);
+  const focus=seen.length?seen.sort((a,b)=>a.ok/a.done-b.ok/b.done).slice(0,3).map(x=>x.tp):tops.slice().sort((a,b)=>(bp[b]||0)-(bp[a]||0)).slice(0,3);
+  return `<section class="hero">
+   ${dl!==null&&dl>=0?`<span class="days">${dl===0?esc(U("today")):`<b>${dl}</b> ${esc(U("daysLeft"))}`}</span>`:""}
+   <h1>${LO(tr.name)}</h1>
+   <div class="est">${ready?`<b>${e.pct}%</b><span>${esc(U("estScore"))}</span>`:`<span>${esc(e.done<EST_MIN?fill(U("estNeed"),{k:EST_MIN-e.done}):fill(U("estCover"),{k:Math.ceil(e.n/2)-e.cov}))}</span>`}</div>
+   ${gauge(ready?e.pct:null,p)}
+   <div class="passlbl" style="--p:${p}%"><span class="${p>70?"r":""}">${esc(fill(U("passMark"),{p}))}</span></div>
+   <div class="hfacts"><span>${s.ok}/${s.total} ${esc(U("mastered"))}</span>${ready?`<span>${esc(fill(U("estBasis"),{a:e.cov,b:e.n}))}</span>`:""}</div>
+  </section>
+  <button type="button" class="btn full big" data-act="quick">${esc(U("quick"))}</button>
+  <div class="duo">
+   <button type="button" class="tile" data-act="exam"><b>${esc(U("exam"))}</b><span>${esc(prem&&tr.exam?fill(U("examShort"),{n:tr.exam.n,m:tr.exam.min}):U("examFree"))}</span></button>
+   <button type="button" class="tile" data-act="missed" ${s.miss?"":"disabled"}><b>${esc(U("missed"))}</b><span>${esc(fill(U("missedSub"),{n:s.miss}))}</span></button>
+  </div>
+  <section><div class="secthead"><h2>${esc(U(seen.length?"focus":"startHere"))}</h2><button type="button" class="back" data-act="nav" data-v="practice">${esc(U("allTopics"))}</button></div>
+   <div class="list">${focus.map(tp=>topicRow(t,tp)).join("")}</div></section>
+  ${g?`<button type="button" class="card cta" data-act="openGuide" data-v="${g.id}"><span><span class="eyebrow">${esc(U("continue"))}: ${esc(U("chapter"))} ${g.n}</span><br><b>${strip(LO(g.title))}</b></span>${svg("chev")}</button>`:""}
+  ${faqOf(t)?`<button type="button" class="card cta" data-act="nav" data-v="faq"><b>${esc(U("faq"))}</b>${svg("chev")}</button>`:""}
+  ${!S.user&&s.done>=5?`<button type="button" class="banner soft" data-act="nav" data-v="auth"><span>${esc(U("saveNudge"))}</span>${svg("chev",18)}</button>`:""}
+  ${prem?"":`<div class="banner"><span class="small">${esc(U("freeLimit"))}</span><button type="button" class="btn" data-act="nav" data-v="upgrade">${esc(U("unlock"))}</button></div>`}
+  <p class="foot">${esc(U("disclaimer"))}</p>`;
+ },
+ practice(){
+  const t=T(),tr=TR[t],s=trackStats(t),prem=hasPrem(t);
+  return `<section><h1>${esc(U("pracTitle"))}</h1>
+   ${tr.exam?`<p class="muted">${esc(fill(U("examFmt"),{n:tr.exam.n,m:tr.exam.min}))}. ${tr.examNote?esc(P(tr.examNote)):""}${prem&&s.total<tr.exam.n?" "+esc(fill(U("shortPool"),{k:s.total,n:tr.exam.n})):""}</p>`:""}</section>
+  ${V.msg?`<div class="banner"><span>${esc(U(V.msg))}</span>${V.msg==="noneAvail"?`<button type="button" class="btn" data-act="nav" data-v="upgrade">${esc(U("unlock"))}</button>`:''}</div>`:''}
+  <button type="button" class="btn full big" data-act="quick">${esc(U("quick"))}</button>
+  <div class="duo">
+   <button type="button" class="tile" data-act="exam"><b>${esc(U("exam"))}</b><span>${esc(prem&&tr.exam?fill(U("examShort"),{n:tr.exam.n,m:tr.exam.min}):U("examFree"))}</span></button>
+   <button type="button" class="tile" data-act="missed" ${s.miss?"":"disabled"}><b>${esc(U("missed"))}</b><span>${esc(fill(U("missedSub"),{n:s.miss}))}</span></button>
+  </div>
+  <section><h2>${esc(U("byTopic"))}</h2><p class="small muted">${esc(fill(U("topicsSub"),{p:Math.round(tr.pass*100)}))}</p>
+   <div class="list">${Object.keys(tr.topics).map(tp=>topicRow(t,tp)).join("")}</div></section>`;
+ },
+ learn(){
+  const t=T(),tr=TR[t],gs=GUIDES.filter(g=>g.t===t).sort((a,b)=>a.n-b.n),prem=hasPrem(t),ls=LS.filter(l=>l.t===t);
+  const chap=gs.map(g=>{const ok=g.check.filter(id=>S.hist[id]&&S.hist[id].ok).length,done=ok===g.check.length;
+   return `<button type="button" class="li" data-act="openGuide" data-v="${g.id}" aria-label="${esc(U("chapter"))} ${g.n}"><span class="chrow"><span class="chnum">${g.n}</span><span><b>${strip(LO(g.title))}</b>${g.observed?`<br><span class="small muted">${esc(U("observed"))}</span>`:""}</span></span><span class="cnt">${done?'<span class="pill ok">✓</span>':`${ok}/${g.check.length}`} ${g.free||prem?"":lockIcon}</span></button>`}).join("");
+  return `<section><h1>${esc(U("learnTitle"))}</h1><p class="muted">${esc(U("learnSub"))}</p></section>
+  ${gs.length?`<section><h2>${esc(U("guides"))}</h2><div class="list">${chap}</div></section>`:`<p class="small muted">${esc(U("guidesLocked"))}</p>`}
+  ${(()=>{if(t!=="cna")return "";const sh=GUIDES.filter(g=>g.t==="hha"&&Q.some(x=>x.t==="cna"&&x.g===g.id)).sort((a,b)=>a.n-b.n);
+   return sh.length?`<section><h2>${esc(U("alsoGuides"))}</h2><div class="list">${sh.map(g=>`<button type="button" class="li" data-act="openGuide" data-v="${g.id}"><span class="chrow"><span class="chnum">${g.n}</span><b>${strip(LO(g.title))}</b></span><span class="cnt">${prem||g.free?"":lockIcon}</span></button>`).join("")}</div></section>`:""})()}
+  ${ls.length?`<section><h2>${esc(U("skills"))}</h2>${ls.map(l=>(prem||l.free)?`<details class="lesson"><summary><span><b>${LO(l.title)}</b></span><span class="cnt small muted">${l.steps.length} ${esc(U("steps"))}</span></summary>
+    <ol class="steps">${l.steps.map(s=>`<li>${L(s[0],s[1])}</li>`).join("")}</ol><p class="note">${L(l.note[0],l.note[1])}</p></details>`
+   :`<button type="button" class="locked" data-act="nav" data-v="upgrade"><span><b>${LO(l.title)}</b></span><span class="pill lock">${lockIcon}${esc(U("locked"))}</span></button>`).join("")}</section>`:""}
+  <button type="button" class="btn ghost full" data-act="nav" data-v="glossary">${esc(U("glossBtn"))} · ${GL.filter(g=>g[2]===tr.code).length}</button>`;
+ },
+ glossary(){
+  const code=TR[T()].code,all=!!V.all,rows=GL.filter(g=>(all||g[2]===code)&&!soonCodes().includes(g[2]));
+  return `<button type="button" class="back" data-act="nav" data-v="learn">${esc(U("back"))}</button>
+  <section><h1>${esc(U("glossTitle"))}</h1><p class="muted">${esc(U("glossSub"))}</p>
+   <label for="gq" class="eyebrow">${esc(U("search"))}</label><input id="gq" class="search" type="search" placeholder="${esc(U("search"))}" autocomplete="off">
+   <label class="small"><input type="checkbox" data-act="allTerms" ${all?"checked":""}> ${esc(U("allTerms"))}</label></section>
+  <div class="list" id="gl">${rows.map(g=>`<div class="gl" data-s="${esc((g[0]+' '+LT(g[0],g[1])).toLowerCase())}"><b>${esc(g[0])}</b><span>${esc(LT(g[0],g[1]))}</span><span class="tag">${all?g[2]:""}</span></div>`).join("")}</div>`;
+ },
+ switch(){
+  return `<button type="button" class="back" data-act="nav" data-v="home">${esc(U("back"))}</button>
+  <section><h1>${esc(U("switchTitle"))}</h1><p class="muted">${esc(U("switchSub"))}</p></section>
+  <div class="choices">${Object.keys(TR).map(t=>{if(TR[t].soon)return `<div class="choice soon" aria-disabled="true"><span class="code">${TR[t].code}</span><span><b>${LO(TR[t].name)}</b><span class="pill lock">${esc(U("soon"))}</span></span></div>`;const s=trackStats(t);return `<button type="button" class="choice ${t===S.track?"cur":""}" data-act="setTrack" data-v="${t}"><span class="code">${TR[t].code}</span><span><b>${LO(TR[t].name)}</b><span class="small muted">${s.ok}/${s.total} ${esc(U("mastered"))}${hasPrem(t)?" · Premium":""}</span></span></button>`}).join("")}</div>`;
+ },
+ account(){
+  const u=Acct.user(),t=T(),tr=TR[t],ent=S.ent.all&&hasPrem("all")?{k:U("monthName"),d:S.ent.all}:hasPrem(t)?{k:U("passName")+" "+tr.code,d:S.ent[t]}:null;
+  return `<section><h1>${esc(U("acctTitle"))}</h1></section>
+  ${u?`<div class="card"><div class="row"><span><b>${esc(u.name)}</b><br><span class="small muted">${esc(u.email)}</span></span><button type="button" class="btn ghost" data-act="signOut">${esc(U("signOut"))}</button></div></div>`
+   :`<div class="card"><b>${esc(U("guest"))}</b><p class="small muted">${esc(U("guestSub"))}</p><button type="button" class="btn full" data-act="nav" data-v="auth">${esc(U("signIn"))}</button></div>`}
+  <div class="card"><div class="row"><span class="eyebrow">${esc(U("plan"))}</span>${ent?`<span class="pill ok">${esc(U("active"))}</span>`:""}</div>
+   <b>${ent?esc(ent.k):esc(U("free"))}</b>${ent&&ent.d<"9000"?`<span class="small muted">${esc(U("until"))} ${ent.d}</span>`:""}
+   ${ent?`<button type="button" class="btn ghost" data-act="nav" data-v="upgrade">${esc(U("manage"))}</button>`:`<button type="button" class="btn" data-act="nav" data-v="upgrade">${esc(U("unlock"))}</button>`}</div>
+  <div class="list">
+   <button type="button" class="li" data-act="nav" data-v="switch"><span>${esc(U("exam_"))}</span><span class="cnt"><b>${tr.code}</b> ${svg("chev",16)}</span></button>
+   <label class="li static" for="acctLang"><span>${esc(U("lang"))}</span><select class="langsel" id="acctLang" data-chg="lang">${[["ht","Kreyòl"],["both","Kreyòl + English"],["fr","Français + English"],["es","Español + English"],["en","English"]].map(([v,a])=>`<option value="${v}" ${S.lang===v?"selected":""}>${a}</option>`).join("")}</select></label>
+   <label class="li static" for="ed"><span>${esc(U("examDate"))}</span><input id="ed" class="date" type="date" value="${S.examDate||""}"></label>
+   ${faqOf(t)?`<button type="button" class="li" data-act="nav" data-v="faq"><span>${esc(U("faq"))}</span>${svg("chev",16)}</button>`:""}
+   <button type="button" class="li" data-act="nav" data-v="sources"><span>${esc(U("viewSources"))}</span>${svg("chev",16)}</button>
+   ${u?`<button type="button" class="li danger" data-act="delAcct"><span>${esc(U("delAcct"))}</span></button>`:""}
+   <button type="button" class="li danger" data-act="reset"><span>${esc(U("reset"))} (${tr.code})</span></button>
+  </div>
+  <p class="foot">${esc(U("disclaimer"))}</p>`;
+ },
+ auth(){
+  return `<button type="button" class="back" data-act="authBack">${esc(U("back"))}</button>
+  <section><h1>${esc(U("authTitle"))}</h1><p class="muted">${esc(U("authSub"))}</p></section>
+  ${V.why?`<div class="banner"><span class="small">${esc(U("needAcct"))}</span></div>`:""}
+  <button type="button" class="btn ghost full" data-act="google">${esc(U("google"))}</button>
+  <div class="or"><span>${W({en:"or",ht:"oswa",fr:"ou",es:"o"})}</span></div>
+  <label class="eyebrow" for="em">${esc(U("email"))}</label><input id="em" class="search" type="email" autocomplete="email" placeholder="you@example.com">
+  <button type="button" class="btn full" data-act="emailIn">${esc(U("sendLink"))}</button>
+  <p class="small muted">${esc(U("authWhy"))}</p><p class="small muted">${esc(U("authDemo"))}</p>`;
+ },
+ upgrade(){
+  const t=T(),tr=TR[t],s=trackStats(t);
+  return `<button type="button" class="back" data-act="nav" data-v="home">${esc(U("back"))}</button>
+  <section><span class="eyebrow">${tr.code}</span><h1>${esc(U("upTitle"))}</h1><p class="muted">${esc(U("upSub"))}</p></section>
+  <div class="plans">
+   <div class="plan hi"><span class="eyebrow">${esc(U("passName"))} · ${tr.code}</span><span class="price">$24.99 <small>${esc(U("passPer"))}</small></span>
+    <ul><li>${s.total} ${esc(U("qs"))} · ${esc(U("passFor"))} ${strip(LO(tr.name))}</li><li>${esc(U("exam"))}</li><li>${esc(U("skills"))}</li></ul>
+    ${hasPrem(t)?`<span class="pill ok">${esc(U("active"))}</span>`:`<button type="button" class="btn full" data-act="buy" data-v="pass">${esc(U("buy"))}</button>`}</div>
+   <div class="plan"><span class="eyebrow">${esc(U("monthName"))}</span><span class="price">$7.99 <small>${esc(U("monthPer"))}</small></span>
+    <ul><li>${Object.values(TR).filter(x=>!x.soon).map(x=>x.code).join(" · ")}</li><li>${esc(U("exam"))}</li></ul>
+    ${hasPrem("all")?`<span class="pill ok">${esc(U("active"))}</span>`:`<button type="button" class="btn ghost full" data-act="buy" data-v="month">${esc(U("subscribe"))}</button>`}</div>
+  </div>
+  <p class="small muted">${esc(U("schools"))}</p><p class="small muted">${esc(U("demoBuy"))}</p>`;
+ },
+ quiz:null,result:null,guide:null,faq:null,sources:null
+};
+Object.assign(views,{
+ quiz(){
+  const x=byId(sess.list[sess.i]),tr=TR[sess.t],exam=sess.mode==="exam",n=sess.list.length;
+  const chosen=sess.ans[x.id],answered=chosen!==undefined,showFb=!exam&&answered,right=chosen===x.c;
+  const opts=sess.perm[x.id].map((o,pos)=>{let cls="";if(showFb){cls=o===x.c?"ok":o===chosen?"bad":"dim"}else if(exam&&chosen===o)cls="sel";
+   return `<button type="button" class="opt ${cls}" data-act="pick" data-v="${o}" ${showFb?'disabled':''} aria-pressed="${chosen===o}"><span class="ltr">${"ABCD"[pos]}</span><span>${L(x.ht[o+1],x.en[o+1])}</span></button>`}).join("");
+  const last=sess.i===n-1;
+  const link=(()=>{if(x.g){const g=GUIDES.find(z=>z.id===x.g),sc=g.sections[x.s];return `<button type="button" class="back" data-act="openSec" data-v="${g.id}|${x.s}">${esc(U("readSec"))}: ${esc(U("chapter"))} ${g.n}, ${strip(LO(sc.h))}</button>`}
+    const g=GUIDES.find(g=>g.check.includes(x.id));return g&&!right?`<button type="button" class="back" data-act="openGuide" data-v="${g.id}">${esc(U("reviewCh"))}: ${strip(LO(g.title))}</button>`:""})();
+  const fb=showFb?`<div class="fb ${right?"yes":"no"}" id="fb" tabindex="-1"><h3>${esc(right?U("right"):U("wrong"))}</h3><p>${L(x.ht[5],x.en[5])}</p>
+   <span class="term"><span class="muted">${esc(U("term"))}:</span><b>${esc(x.k[0])}</b><span>=</span><span>${esc(LT(x.k[0],x.k[1]))}</span></span>${qSrc(x)}${link}</div>`:"";
+  const prog=n<=20?`<div class="segs" aria-hidden="true">${sess.list.map((id,i)=>{const a=sess.ans[id];const c=i===sess.i&&!showFb?"on":a===undefined?"":exam?"done":a===byId(id).c?"ok":"bad";return `<i class="${c}"></i>`}).join("")}</div>`
+   :`<div class="qprog" aria-hidden="true"><i style="width:${Math.round((sess.i+(answered?1:0))/n*100)}%"></i></div>`;
+  return `<div class="qtop"><button type="button" class="back" data-act="quit">${esc(U("back"))}</button>
+   ${exam?`<span class="timer" id="timer" aria-label="${esc(U("timeLeft"))}">${fmt(sess.end-Date.now())}</span>`:`<span class="pill topic">${esc(P(tr.topics[x.tp]))}</span>`}</div>
+  <div class="qhead"><span class="qcount">${esc(U("question"))} <b>${sess.i+1}</b> / ${n}</span>${exam?`<span class="small muted">${esc(P(tr.topics[x.tp]))}</span>`:""}</div>
+  ${prog}
+  ${x.sign?signSvg(x.sign):""}<p class="qtext">${L(x.ht[0],x.en[0])}</p>
+  <button type="button" class="listen" data-act="listen" data-v="${x.id}">${spk}${esc(U("listen"))}</button>
+  <div class="opts">${opts}</div>${fb}
+  <div class="qbar"><div class="in">${exam||answered?`<button type="button" class="btn" data-act="next">${esc(last?U("finish"):U("next"))}</button>`:`<span class="hint">${esc(U("pickOne"))}</span>`}</div></div>`;
+ },
+
+ result(){
+  const tr=TR[sess.t],n=sess.list.length,p=Math.round(tr.pass*100);let right=0;const wrong=[];
+  sess.list.forEach(id=>{const x=byId(id);if(sess.ans[id]===x.c)right++;else wrong.push(x)});
+  const pct=Math.round(right/n*100),passed=right/n>=tr.pass,need=Math.max(0,Math.ceil(tr.pass*n-1e-9)-right),full=sess.mode==="exam"&&tr.exam&&n>=tr.exam.n;
+  const areas=sess.mode==="exam"&&n>5?(()=>{const by={};sess.list.forEach(id=>{const x=byId(id);const b=by[x.tp]||(by[x.tp]={ok:0,n:0});b.n++;if(sess.ans[id]===x.c)b.ok++});
+   const rows=Object.keys(by).sort((a,b)=>by[a].ok/by[a].n-by[b].ok/by[b].n);
+   return `<section><h2>${esc(U("byArea"))}</h2><div class="list">${rows.map(k=>{const b=by[k],q=Math.round(b.ok/b.n*100);
+    return `<button type="button" class="topic" data-act="practice" data-v="${k}"><span>${LO(tr.topics[k])}</span><span class="cnt ${q>=p?"ok":""}">${b.ok}/${b.n}</span>${gauge(q,p,"sm")}</button>`}).join("")}</div></section>`})():"";
+  return `<button type="button" class="back" data-act="quit">${esc(U("back"))}</button>
+  <section><span class="eyebrow">${tr.code}: ${esc(U("result"))}</span>
+   ${sess.timeUp?`<p class="muted">${esc(U("timeUp"))}</p>`:''}
+   <div class="score"><b>${pct}%</b><span class="muted">${right}/${n}</span></div>
+   ${gauge(pct,p)}<div class="passlbl" style="--p:${p}%"><span class="${p>70?"r":""}">${esc(fill(U("passMark"),{p}))}</span></div>
+   ${full?`<p class="verdict ${passed?"ok":""}">${esc(passed?U("verdictPass"):fill(U("verdictNeed"),{k:need}))}</p>`:sess.mode==="exam"&&tr.exam?`<p class="verdict">${esc(fill(U("verdictMini"),{n,N:tr.exam.n}))}</p>`:""}</section>
+  ${wrong.length?`<button type="button" class="btn full big" data-act="retryWrong">${esc(fill(U("retryWrong"),{n:wrong.length}))}</button>`:""}
+  <div class="actions"><button type="button" class="btn ${wrong.length?"ghost":""}" data-act="restart">${esc(U("again"))}</button><button type="button" class="btn ghost" data-act="quit">${esc(U("toTrack"))}</button></div>
+  ${!hasPrem(sess.t)&&sess.mode==="exam"?`<div class="banner"><span class="small">${esc(U("freeLimit"))}</span><button type="button" class="btn" data-act="nav" data-v="upgrade">${esc(U("unlock"))}</button></div>`:""}
+  ${areas}
+  ${wrong.length?`<details class="mist"${sess.mode==="exam"?"":" open"}><summary><span>${esc(fill(U("reviewMistakes"),{n:wrong.length}))}</span>${svg("chev",18)}</summary><div class="review">${wrong.map(x=>{const c=sess.ans[x.id];return `<div class="rv"><p><b>${L(x.ht[0],x.en[0])}</b></p>
+   <p class="yours small">${esc(U("yours"))}: ${c===undefined||c<0?esc(U("skipped")):L(x.ht[c+1],x.en[c+1])}</p>
+   ${x.sign?signSvg(x.sign,"sign sm"):""}<p class="right small">${esc(U("correct"))}: ${L(x.ht[x.c+1],x.en[x.c+1])}</p><p class="small muted">${L(x.ht[5],x.en[5])}</p>${qSrc(x)}${x.g?`<button type="button" class="back" data-act="openSec" data-v="${x.g}|${x.s}">${esc(U("readSec"))}</button>`:""}</div>`}).join("")}</div></details>`:`<p>${esc(U("allRight"))}</p>`}`;
+ },
+
+ guide(){
+  const g=GUIDES.find(x=>x.id===V.g),tr=TR[g.t];
+  const blocks=b=>{let out="",mode=null;const close=()=>{if(mode)out+=mode==="n"?"</ol>":"</ul>";mode=null};
+   b.forEach(([k,ht,en])=>{if(k==="p"){close();out+=`<p>${L(ht,en)}</p>`}else{if(mode!==k){close();out+=k==="n"?'<ol class="gl-list">':'<ul class="gl-list">';mode=k}out+=`<li>${L(ht,en)}</li>`}});close();return out};
+  const open=hasPrem(g.t)||g.free||(g.t==="hha"&&T()==="cna"&&hasPrem("cna")),vis=g.sections.map((s,i)=>open||i===0||i===V.sec);
+  return `${V.from?`<button type="button" class="back" data-act="backFrom">${esc(U("backQuiz"))}</button>`:`<button type="button" class="back" data-act="nav" data-v="learn">${esc(U("back"))}</button>`}
+  <section><span class="eyebrow">${tr.code}: ${esc(U("chapter"))} ${g.n}</span><h1>${LO(g.title)}</h1><p class="muted small">${LO(g.blueprint)}</p></section>
+  ${g.observed?`<span class="pill ok" style="align-self:flex-start">${esc(U("observed"))}</span>`:""}
+  ${g.sections.map((s,i)=>!vis[i]?"":`<section class="gsec${i===V.sec?" hl":""}" id="sec-${i}"><h2>${LO(s.h)}</h2>${s.sign?signSvg(s.sign,"gsign"):""}${blocks(s.b)}<p class="cite">${esc(U("srcLabel"))}: ${s.src.map(id=>`<a href="${SRC[id].url}" target="_blank" rel="noopener">${esc(SRC[id].name)}</a>`).join(" · ")}${s.pg?`, ${esc(U("pg"))} ${esc(s.pg)}`:""}</p></section>`).join("")}
+  ${!open?`<div class="banner"><span>${esc(U("chLocked"))}</span><button type="button" class="btn" data-act="nav" data-v="upgrade">${esc(U("unlock"))}</button></div>`:""}
+  ${(()=>{const ks=LS.filter(l=>l.g===g.id);return ks.length?`<section><h2>${esc(U("skillsCh"))}</h2>${ks.map(l=>(hasPrem(g.t)||l.free)?`<details class="lesson"><summary><span><b>${LO(l.title)}</b></span><span class="cnt small muted">${l.steps.length} ${esc(U("steps"))}</span></summary><ol class="steps">${l.steps.map(s=>`<li>${L(s[0],s[1])}</li>`).join("")}</ol><p class="note">${L(l.note[0],l.note[1])}</p></details>`:`<button type="button" class="locked" data-act="nav" data-v="upgrade"><span><b>${LO(l.title)}</b></span><span class="pill lock">${lockIcon}${esc(U("locked"))}</span></button>`).join("")}</section>`:""})()}
+  <section><h2>${esc(U("keyTerms"))}</h2><div class="list">${g.terms.map(t=>`<div class="gl"><b>${esc(t[0])}</b><span>${esc(LT(t[0],t[1]))}</span><span></span></div>`).join("")}</div></section>
+  <button type="button" class="btn full" data-act="guideCheck" data-v="${g.id}">${esc(U("guideCheck"))}</button>
+  <button type="button" class="back" data-act="nav" data-v="sources">${esc(U("viewSources"))}</button>`;
+ },
+
+ faq(){
+  const t=T(),F=faqOf(t)||[];
+  return `<button type="button" class="back" data-act="nav" data-v="home">${esc(U("back"))}</button>
+  <section><span class="eyebrow">${TR[t].code}</span><h1>${esc(U("faq"))}</h1><p class="muted">${esc(U(t==="permit"?"faqSubPermit":"faqSub"))}</p></section>
+  ${(()=>{const G=t==="permit"?window.PERMIT_FAQ_GROUPS||{}:{};let cur=null;return F.map(f=>{const h=f[6]&&f[6]!==cur&&G[f[6]]?`<h2 class="faqh">${L(G[f[6]][0],G[f[6]][1])}</h2>`:"";cur=f[6];
+   return h+`<details class="lesson"><summary><span><b>${L(f[0],f[1])}</b></span></summary><p>${L(f[2],f[3])}</p><p class="cite">${esc(U("srcLabel"))}: ${f[4].map(id=>`<a href="${SRC[id].url}" target="_blank" rel="noopener">${esc(SRC[id].name)}</a>${id==="S7"&&f[5]?`, ${esc(U("pg"))} ${esc(f[5])}`:""}`).join(" · ")}</p></details>`}).join("")})()}
+  <p class="foot">${esc(U("disclaimer"))}</p>`;
+ },
+
+ sources(){
+  const lic=W({en:"License / use",ht:"Lisans / itilizasyon",fr:"Licence / utilisation",es:"Licencia / uso"});
+  return `<button type="button" class="back" data-act="nav" data-v="account">${esc(U("back"))}</button>
+  <section><h1>${esc(U("sourcesTitle"))}</h1><p class="muted">${esc(U("sourcesSub"))}</p></section>
+  <div class="list">${Object.keys(SRC).map(id=>`<div class="gl"><b><a href="${SRC[id].url}" target="_blank" rel="noopener">${esc(SRC[id].name)}</a></b><span class="small muted">${lic}: ${esc(SRC[id].lic)}</span><span class="tag">${id}</span></div>`).join("")}</div>
+  <p class="note" style="margin:0">${esc(U("attrib"))} <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a></p>
+  <p class="foot">${esc(U("disclaimer"))}</p>`;
+ }
+});
+
+/* ---------- Sessions ---------- */
+function fmt(ms){ms=Math.max(0,ms);const s=Math.ceil(ms/1000);return Math.floor(s/60)+":"+String(s%60).padStart(2,"0")}
+function start(mode,t,tp,ids){
+ const origin=["quiz","result"].includes(V.view)&&sess?sess.origin:Object.assign({},V);
+ let pool=Q.filter(x=>x.t===t&&avail(x));
+ if(ids)pool=ids.map(byId).filter(x=>x&&avail(x));
+ else if(tp)pool=pool.filter(x=>x.tp===tp);
+ if(mode==="missed")pool=Q.filter(x=>x.t===t&&avail(x)&&S.hist[x.id]&&S.hist[x.id].ok===false);
+ if(!pool.length){go("practice",{msg:mode==="missed"?"noneMissed":"noneAvail"});return}
+ pool=shuffle(pool);
+ if(mode==="quick"){const rank=x=>{const h=S.hist[x.id];return !h?0:h.ok===false?1:2};pool.sort((a,b)=>rank(a)-rank(b));pool=pool.slice(0,10);mode="practice"}
+ if(mode==="exam")pool=hasPrem(t)?examDraw(t,pool):pool.slice(0,Math.min(5,pool.length));
+ const ex=TR[t].exam||{n:pool.length,min:pool.length};
+ sess={mode,t,tp,ids,origin,list:pool.map(x=>x.id),i:0,ans:{},perm:{},end:mode==="exam"?Date.now()+Math.round(ex.min*60000*pool.length/ex.n):0,timeUp:false};
+ pool.forEach(x=>sess.perm[x.id]=shuffle([0,1,2,3]));
+ go("quiz");
+}
+function record(id,choice){const x=byId(id),h=S.hist[id]||{n:0};S.hist[id]={ok:choice===x.c,n:h.n+1}}
+function finish(timeUp){
+ if(sess.mode==="exam")sess.list.forEach(id=>{if(sess.ans[id]!==undefined)record(id,sess.ans[id]);else record(id,-1)});
+ sess.timeUp=!!timeUp;save();go("result");
+}
+function speak(id){
+ const x=byId(id);
+ try{if(!("speechSynthesis" in window))return;speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(x.en[0]+" "+x.en.slice(1,5).map((a,i)=>"ABCD"[i]+". "+a).join(". "));u.lang="en-US";u.rate=.9;speechSynthesis.speak(u)}catch(e){}
+}
+
+/* ---------- Render + events ---------- */
+function go(view,extra){V=Object.assign({view},extra||{});render();window.scrollTo(0,0)}
+function render(){
+ clearInterval(timer);
+ if(!T()&&V.view!=="onboard")V={view:"onboard",step:S.track?1:0}; /* a user whose exam was parked goes straight to choosing an exam */
+ const ob=V.view==="onboard";
+ document.body.classList.toggle("ob",ob);
+ document.body.classList.toggle("focus",V.view==="quiz");
+ document.documentElement.lang=S.lang==="both"?"ht":S.lang;
+ document.getElementById("langSel").value=S.lang;
+ document.getElementById("tagline").textContent=U("tag");
+ const off=document.getElementById("offline");off.hidden=navigator.onLine!==false;off.textContent=U("offline");
+ const tc=document.getElementById("trackChip");tc.hidden=ob||!T();if(T())tc.querySelector("b").textContent=TR[T()].code;
+ document.querySelectorAll("[data-ui]").forEach(el=>el.textContent=U(el.dataset.ui));
+ const tab={home:"home",switch:"home",faq:"home",quiz:"practice",result:"practice",practice:"practice",learn:"learn",guide:"learn",glossary:"learn",account:"account",auth:"account",upgrade:"account",sources:"account"}[V.view];
+ document.querySelectorAll("nav.tabs button").forEach(b=>b.dataset.v===tab?b.setAttribute("aria-current","page"):b.removeAttribute("aria-current"));
+ document.getElementById("app").innerHTML=views[V.view]();
+ if(V.view==="quiz"&&sess.mode==="exam"){
+  timer=setInterval(()=>{const left=sess.end-Date.now(),el=document.getElementById("timer");
+   if(left<=0){clearInterval(timer);finish(true);return}
+   if(el){el.textContent=fmt(left);el.classList.toggle("low",left<60000)}},1000);
+ }
+ if(V.view==="glossary"){const inp=document.getElementById("gq");inp.addEventListener("input",()=>{const v=inp.value.trim().toLowerCase();document.querySelectorAll("#gl .gl").forEach(r=>r.hidden=!!v&&!r.dataset.s.includes(v))})}
+ if(V.view==="account"){const d=document.getElementById("ed");d.addEventListener("change",()=>{S.examDate=d.value||null;save()})}
+}
+const H={
+ lang:v=>{if(!LANGS.includes(v))return;S.lang=v;save();render();needLang(v,render)},
+ nav:v=>go(v),
+ obStep:v=>go("onboard",{step:+v}),
+ obLang:v=>{S.lang=v;save();go("onboard",{step:1});needLang(v,render)},
+ obExam:v=>{if(!TR[v]||TR[v].soon)return;S.track=v;save();go("onboard",{step:2})},
+ obDone:()=>{const d=document.getElementById("obd").value;S.examDate=d||null;save();go("home")},
+ obSkip:()=>{S.examDate=null;save();go("home")},
+ setTrack:v=>{if(!TR[v]||TR[v].soon)return;S.track=v;save();go("home")},
+ quick:()=>start("quick",T()),
+ practice:v=>start("practice",T(),v||null),
+ exam:()=>start("exam",T()),
+ missed:()=>start("missed",T()),
+ pick:v=>{const id=sess.list[sess.i];v=+v;if(sess.mode!=="exam"){if(sess.ans[id]!==undefined)return;sess.ans[id]=v;record(id,v);save()}else sess.ans[id]=v;render();
+  const fb=document.getElementById("fb");if(fb){const calm=matchMedia("(prefers-reduced-motion: reduce)").matches;fb.scrollIntoView({block:"nearest",behavior:calm?"auto":"smooth"})}},
+ retryWrong:()=>{const ids=sess.list.filter(id=>sess.ans[id]!==byId(id).c);start("practice",sess.t,null,ids)},
+ next:()=>{if(sess.i<sess.list.length-1){sess.i++;render();window.scrollTo(0,0)}else finish(false)},
+ quit:()=>{const o=sess&&sess.origin;go(o&&o.view&&views[o.view]&&!["quiz","result"].includes(o.view)?o.view:"practice",o)},
+ restart:()=>start(sess.mode,sess.t,sess.tp,sess.ids),
+ openGuide:v=>go("guide",{g:v}),
+ openSec:v=>{const [g,i]=v.split("|");go("guide",{g,sec:+i,from:V.view==="quiz"||V.view==="result"?V.view:null});const el=document.getElementById("sec-"+i);if(el)el.scrollIntoView({block:"start"})},
+ backFrom:()=>{go(V.from)},
+ guideCheck:v=>{const g=GUIDES.find(x=>x.id===v);if(g.t==="hha"&&T()==="cna"){const ids=g.check.map(i=>"c-"+i).filter(byId);start("practice","cna",null,ids.length?ids:Q.filter(x=>x.t==="cna"&&x.g===g.id).slice(0,5).map(x=>x.id));return}start("practice",g.t,null,g.check)},
+ listen:v=>speak(v),
+ allTerms:()=>go("glossary",{all:!V.all}),
+ reset:()=>{if(!confirm(U("resetQ")))return;Q.filter(x=>x.t===T()).forEach(x=>delete S.hist[x.id]);save();render()},
+ signOut:()=>{Acct.signOut();render()},
+ delAcct:()=>{if(!confirm(U("delQ")))return;/* TODO: call delete-account Edge Function, then sign out */Acct.signOut();S.ent={};save();render()},
+ google:()=>{Acct.signInGoogle();H.authBack()},
+ emailIn:()=>{const e=document.getElementById("em"),v=e.value.trim();if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v)){e.focus();e.setAttribute("aria-invalid","true");return}Acct.signInEmail(v);H.authBack()},
+ authBack:()=>{const n=V.next;if(n&&Acct.user()){go(n.view,n)}else go(n?n.view:"account",n||{})},
+ buy:v=>{if(!Acct.user()){go("auth",{why:1,next:{view:"upgrade"}});return}Acct.buy(v,T());render()}
+};
+document.addEventListener("click",e=>{const b=e.target.closest("[data-act]");if(!b)return;const f=H[b.dataset.act];if(f)f(b.dataset.v,b)});
+document.addEventListener("change",e=>{const c=e.target.closest("[data-chg]");if(c&&H[c.dataset.chg])H[c.dataset.chg](c.value)});
+render();
+needLang(S.lang,render);
+window.addEventListener("online",render);window.addEventListener("offline",render);
+/* Offline support: works when the app is served over http(s), e.g. GitHub Pages. Fails quietly where service workers are not allowed. */
+if("serviceWorker" in navigator&&/^https?:$/.test(location.protocol)){try{navigator.serviceWorker.register("sw.js").catch(()=>{})}catch(e){}}
+</script>
+
+</body></html>

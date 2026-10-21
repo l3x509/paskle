@@ -1,7 +1,7 @@
 /* Paskle service worker: makes practice work offline.
    App files are saved on install; language files and fonts are saved the first time they load.
    Bump VERSION whenever any file changes, so phones pick up the new version. */
-const VERSION = "paskle-2026-10-21d";
+const VERSION = "paskle-2026-10-21e";
 const CORE = [
   "./", "index.html", "manifest.webmanifest",
   "data/hha-a.js", "data/hha-b.js", "data/hha-c.js", "data/hha-d.js", "data/hha-map.js",

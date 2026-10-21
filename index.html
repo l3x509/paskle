@@ -294,7 +294,6 @@ body.ob nav.tabs{display:none}
   <div class="bar">
     <div class="lead"><div class="brand"><b>Paskle<span>.</span></b><small id="tagline">Egzamen an Kreyòl, ak Anglè bò kote</small></div><button type="button" class="tchip" id="trackChip" data-act="nav" data-v="switch" hidden><b>HHA</b><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button></div>
     <select class="langsel" id="langSel" data-chg="lang" aria-label="Lang / Langue / Idioma / Language">
-      <option value="ht">Kreyòl</option>
       <option value="both">Kreyòl + English</option>
       <option value="fr">Français + English</option>
       <option value="es">Español + English</option>
@@ -651,15 +650,15 @@ const GL=[
 
 /* ---------- State ---------- */
 const KEY="pase:v1"; /* storage key kept from the app's first name so saved progress carries over */
-function load(){const d={lang:"both",premium:false,hist:{}};try{const s=JSON.parse(localStorage.getItem(KEY)||"{}");return Object.assign(d,s,{hist:Object.assign({},s.hist||{})})}catch(e){return d}}
+function load(){const d={lang:"both",premium:false,hist:{}};try{const s=JSON.parse(localStorage.getItem(KEY)||"{}");const o=Object.assign(d,s,{hist:Object.assign({},s.hist||{})});if(o.lang==="ht")o.lang="both"; /* Kreyòl-only mode was retired: show Kreyòl with English */return o}catch(e){return d}}
 const S=load();
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 let V={view:"home"}, sess=null, timer=null;
 const byId=id=>Q.find(x=>x.id===id);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-/* Language modes: ht (Kreyòl), both (Kreyòl + English), fr (Français + English), es (Español + English), en (English).
+/* Language modes: both (Kreyòl + English), fr (Français + English), es (Español + English), en (English).
    French and Spanish come from data/i18n-*.js, keyed by the English string; a missing entry falls back to English. */
-const LANGS=["ht","both","fr","es","en"];
+const LANGS=["both","fr","es","en"];
 const isX=()=>S.lang==="fr"||S.lang==="es";
 const TX=en=>{const d=(window.I18N||{})[S.lang];return d?d[en]:undefined};
 /* Load data/i18n-fr.js or -es.js only when that mode is chosen; until it arrives the page shows English. */
@@ -853,7 +852,7 @@ const views={
   const st=V.step||0;
   const dots=`<div class="dots" aria-hidden="true">${[0,1,2].map(i=>`<i class="${i<=st?"on":""}"></i>`).join("")}</div>`;
   if(st===0)return `${dots}<section><h1>${esc(U("obLang"))}</h1><p class="muted">${esc(U("obLangSub"))}</p></section>
-   <div class="choices">${[["ht","Kreyòl","Kreyòl sèlman"],["both","Kreyòl + English","Kreyòl ak Anglè bò kote"],["fr","Français + English","Français, avec l'anglais à côté"],["es","Español + English","Español, con el inglés al lado"],["en","English","English only"]].map(([v,a,b])=>`<button type="button" class="choice" data-act="obLang" data-v="${v}"><b>${a}</b><span class="muted small">${b}</span></button>`).join("")}</div>
+   <div class="choices">${[["both","Kreyòl + English","Kreyòl ak Anglè bò kote"],["fr","Français + English","Français, avec l'anglais à côté"],["es","Español + English","Español, con el inglés al lado"],["en","English","English only"]].map(([v,a,b])=>`<button type="button" class="choice" data-act="obLang" data-v="${v}"><b>${a}</b><span class="muted small">${b}</span></button>`).join("")}</div>
 `;
   if(st===1)return `${dots}<button type="button" class="back" data-act="obStep" data-v="0">${esc(U("back"))}</button><section><h1>${esc(U("obExam"))}</h1><p class="muted">${esc(U("obExamSub"))}</p></section>
    <div class="choices">${Object.keys(TR).map(t=>TR[t].soon?`<div class="choice soon" aria-disabled="true"><span class="code">${TR[t].code}</span><span><b>${LO(TR[t].name)}</b><span class="pill lock">${esc(U("soon"))}</span></span></div>`:`<button type="button" class="choice" data-act="obExam" data-v="${t}"><span class="code">${TR[t].code}</span><span><b>${LO(TR[t].name)}</b></span></button>`).join("")}</div>`;
@@ -937,7 +936,7 @@ const views={
    ${ent?`<button type="button" class="btn ghost" data-act="nav" data-v="upgrade">${esc(U("manage"))}</button>`:`<button type="button" class="btn" data-act="nav" data-v="upgrade">${esc(U("unlock"))}</button>`}</div>
   <div class="list">
    <button type="button" class="li" data-act="nav" data-v="switch"><span>${esc(U("exam_"))}</span><span class="cnt"><b>${tr.code}</b> ${svg("chev",16)}</span></button>
-   <label class="li static" for="acctLang"><span>${esc(U("lang"))}</span><select class="langsel" id="acctLang" data-chg="lang">${[["ht","Kreyòl"],["both","Kreyòl + English"],["fr","Français + English"],["es","Español + English"],["en","English"]].map(([v,a])=>`<option value="${v}" ${S.lang===v?"selected":""}>${a}</option>`).join("")}</select></label>
+   <label class="li static" for="acctLang"><span>${esc(U("lang"))}</span><select class="langsel" id="acctLang" data-chg="lang">${[["both","Kreyòl + English"],["fr","Français + English"],["es","Español + English"],["en","English"]].map(([v,a])=>`<option value="${v}" ${S.lang===v?"selected":""}>${a}</option>`).join("")}</select></label>
    <label class="li static" for="ed"><span>${esc(U("examDate"))}</span><input id="ed" class="date" type="date" value="${S.examDate||""}"></label>
    ${faqOf(t)?`<button type="button" class="li" data-act="nav" data-v="faq"><span>${esc(U("faq"))}</span>${svg("chev",16)}</button>`:""}
    <button type="button" class="li" data-act="nav" data-v="sources"><span>${esc(U("viewSources"))}</span>${svg("chev",16)}</button>
@@ -961,10 +960,10 @@ const views={
   return `<button type="button" class="back" data-act="nav" data-v="home">${esc(U("back"))}</button>
   <section><span class="eyebrow">${tr.code}</span><h1>${esc(U("upTitle"))}</h1><p class="muted">${esc(U("upSub"))}</p></section>
   <div class="plans">
-   <div class="plan hi"><span class="eyebrow">${esc(U("passName"))} · ${tr.code}</span><span class="price">$24.99 <small>${esc(U("passPer"))}</small></span>
+   <div class="plan hi"><span class="eyebrow">${esc(U("passName"))} · ${tr.code}</span><span class="price">$14.99 <small>${esc(U("passPer"))}</small></span>
     <ul><li>${s.total} ${esc(U("qs"))} · ${esc(U("passFor"))} ${strip(LO(tr.name))}</li><li>${esc(U("exam"))}</li><li>${esc(U("skills"))}</li></ul>
     ${hasPrem(t)?`<span class="pill ok">${esc(U("active"))}</span>`:`<button type="button" class="btn full" data-act="buy" data-v="pass">${esc(U("buy"))}</button>`}</div>
-   <div class="plan"><span class="eyebrow">${esc(U("monthName"))}</span><span class="price">$7.99 <small>${esc(U("monthPer"))}</small></span>
+   <div class="plan"><span class="eyebrow">${esc(U("monthName"))}</span><span class="price">$4.99 <small>${esc(U("monthPer"))}</small></span>
     <ul><li>${Object.values(TR).filter(x=>!x.soon).map(x=>x.code).join(" · ")}</li><li>${esc(U("exam"))}</li></ul>
     ${hasPrem("all")?`<span class="pill ok">${esc(U("active"))}</span>`:`<button type="button" class="btn ghost full" data-act="buy" data-v="month">${esc(U("subscribe"))}</button>`}</div>
   </div>

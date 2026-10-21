@@ -40,6 +40,6 @@ After any change, bump `VERSION` in `sw.js` so installed copies update.
 
 ## Hosting
 
-The site is static, so any static host works, such as GitHub Pages or Cloudflare Pages. Serve it from the domain root so the service worker covers the whole site.
+The site is hosted on Hostinger, and this repo only holds the files. Hostinger's Git deployment (hPanel → Advanced → Git) publishes `main` to `public_html` whenever new commits are pushed.
 
 © Lexcellent Solutions LLC

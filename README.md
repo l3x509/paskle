@@ -6,7 +6,7 @@ Live site: [paskleapp.com](https://paskleapp.com)
 
 ## What's inside
 
-- **One-page app:** `index.html` holds the app's code, screens and styles. It works offline (`sw.js`) and can be installed on a phone (`manifest.webmanifest`).
+- **One-page app:** `index.html` holds the app's code, screens and styles. It works offline (`sw.js`) and can be installed on a phone (`manifest.webmanifest`). Fonts are served from `fonts/` (SIL Open Font License). Privacy policy: `privacy.html`.
 - **Study guides and questions:** in `data/`.
   - HHA: 14 federal subjects, `data/hha-*.js`.
   - CNA: Massachusetts written exam outline, `data/cna-a.js` and `data/ma-cna.js`.
@@ -30,6 +30,17 @@ node tools/i18n-check.js                  # lists missing or stale French/Spanis
 ```
 
 After any change, bump `VERSION` in `sw.js` so installed copies update.
+
+## Editing the Kreyòl text
+
+```
+python3 tools/kreyol_export.py              # writes kreyol-strings.xlsx: every Kreyòl text with its English
+python3 tools/kreyol_import.py kreyol-strings.xlsx   # puts the "Your edit" column back into the right files and rebuilds
+```
+
+## Android app
+
+The Google Play app is the same web app packaged with Capacitor. Build steps, store listing text and graphics are in `android-app/`.
 
 ## Content rules
 

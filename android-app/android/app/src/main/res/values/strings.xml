@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Paskle</string>
+    <string name="title_activity_main">Paskle</string>
+    <string name="package_name">app.lexcellent.paskle</string>
+    <string name="custom_url_scheme">app.lexcellent.paskle</string>
+</resources>

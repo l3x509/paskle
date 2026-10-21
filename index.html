@@ -8,10 +8,12 @@
 <link rel="apple-touch-icon" href="icons/icon-192.png">
 <title>Paskle</title>
 <meta name="claude:viewport-fit-sides" content="cover">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&display=swap">
+<link rel="preload" href="fonts/atkinson-hyperlegible-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
 <style>
+/* Fonts are served with the app (SIL Open Font License, see fonts/), so nothing loads from outside and they work offline. */
+@font-face{font-family:"Atkinson Hyperlegible";font-style:normal;font-weight:400;font-display:swap;src:url(fonts/atkinson-hyperlegible-latin-400-normal.woff2) format("woff2")}
+@font-face{font-family:"Atkinson Hyperlegible";font-style:normal;font-weight:700;font-display:swap;src:url(fonts/atkinson-hyperlegible-latin-700-normal.woff2) format("woff2")}
+@font-face{font-family:"Source Serif 4";font-style:normal;font-weight:200 900;font-display:swap;src:url(fonts/source-serif-4-latin-opsz-normal.woff2) format("woff2-variations"),url(fonts/source-serif-4-latin-opsz-normal.woff2) format("woff2")}
 /* Paskle look: navy and brass (a cousin of ClearImmi, not a copy).
    One signature device: the pass line, a brass tick at the passing score on every progress bar.
    Titles: Source Serif 4. Everything people read while studying: Atkinson Hyperlegible. */
@@ -134,6 +136,7 @@ section{display:flex;flex-direction:column;gap:12px}
 .list{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden}
 .li{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;border-top:1px solid var(--line);width:100%;background:none;border-left:0;border-right:0;border-bottom:0;text-align:left;cursor:pointer;color:var(--fg)}
 .li:first-child{border-top:0}
+a.li{color:inherit;text-decoration:none}
 .li:hover{background:var(--accent-soft)}
 .li .cnt{font-size:.84rem;color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums}
 .li.static{cursor:default}.li.static:hover{background:none}
@@ -342,7 +345,7 @@ const UI={
   roadmap:"Plan kontni",now:"Kounye a",target:"Objektif v1",timeUp:"Tan an fini.",
   disclaimer:"Paskle pa afilye ak RMV Massachusetts, DPH, oswa FMCSA. Kesyon yo baze sou manyèl ofisyèl yo. Toujou verifye ak dènye vèsyon manyèl la.",
   sample:"Kesyon echantiyon",guides:"Gid etid",chapter:"Chapit",guideCheck:"Teste tèt ou: 5 kesyon",reviewCh:"Revize chapit la",readSec:"Li seksyon sa a nan gid la",backQuiz:"Retounen nan kesyon an",keyTerms:"Mo pou egzamen an",
-  srcLabel:"Sous",pg:"paj",roadSign:"Siy wout",faqSubPermit:"Sa pou w konnen pou jwenn pèmi apranti ak lisans ou nan Massachusetts, dapre Mànyèl Chofè RMV a (avril 2026). Frè ak règ yo ka chanje: verifye nan Mass.Gov/RMV.",sourcesTitle:"Sous ak lisans",sourcesSub:"Kontni sa a ekri an pwòp mo nou, apati sous gratis ak sous ofisyèl. Men ki kote chak enfòmasyon soti.",
+  srcLabel:"Sous",privacy:"Politik sou vi prive",pg:"paj",roadSign:"Siy wout",faqSubPermit:"Sa pou w konnen pou jwenn pèmi apranti ak lisans ou nan Massachusetts, dapre Mànyèl Chofè RMV a (avril 2026). Frè ak règ yo ka chanje: verifye nan Mass.Gov/RMV.",sourcesTitle:"Sous ak lisans",sourcesSub:"Kontni sa a ekri an pwòp mo nou, apati sous gratis ak sous ofisyèl. Men ki kote chak enfòmasyon soti.",
   viewSources:"Sous ak lisans",attrib:"Kèk pati nan gid sa yo adapte de Nursing Assistant, pa Myra Sandquist Reuter (WisTech Open / Chippewa Valley Technical College, remix Open RN), anba lisans CC BY 4.0. Chanjman: reekri, rezime, mete ansanm ak gid CDC ak enfòmasyon egzamen Massachusetts, epi tradui an Kreyòl, an franse ak an panyòl. Nou pa itilize pati ki anba lisans CC BY-NC.",
   faq:"Kesyon sou egzamen an",faqSub:"Sa pou w konnen sou fòmasyon ak evalyasyon HHA. Verifye detay yo ak ajans oswa lekòl ou.",skillsCh:"Konpetans pratik nan chapit sa a",observed:"Enfimyè a gade w fè l",chLocked:"Rès chapit sa a disponib ak Premium.",
   guidesLocked:"Lòt chapit yo ap vini. Chak chapit swiv plan egzamen ofisyèl la."},
@@ -363,7 +366,7 @@ const UI={
   roadmap:"Content plan",now:"Now",target:"v1 target",timeUp:"Time is up.",
   disclaimer:"Paskle is not affiliated with the Massachusetts RMV, DPH, or FMCSA. Questions are based on the official manuals. Always check the latest edition.",
   sample:"Sample questions",guides:"Study guides",chapter:"Chapter",guideCheck:"Check yourself: 5 questions",reviewCh:"Review the chapter",readSec:"Read this in the guide",backQuiz:"Back to the question",keyTerms:"Exam-day terms",
-  srcLabel:"Sources",pg:"p.",roadSign:"Road sign",faqSubPermit:"What to know about getting your Massachusetts learner's permit and license, from the RMV Driver's Manual (April 2026). Fees and rules can change: confirm at Mass.Gov/RMV.",sourcesTitle:"Sources and licenses",sourcesSub:"This content is written in our own words from free and official sources. Here is where each fact comes from.",
+  srcLabel:"Sources",privacy:"Privacy policy",pg:"p.",roadSign:"Road sign",faqSubPermit:"What to know about getting your Massachusetts learner's permit and license, from the RMV Driver's Manual (April 2026). Fees and rules can change: confirm at Mass.Gov/RMV.",sourcesTitle:"Sources and licenses",sourcesSub:"This content is written in our own words from free and official sources. Here is where each fact comes from.",
   viewSources:"Sources and licenses",attrib:"Portions of these guides are adapted from Nursing Assistant by Myra Sandquist Reuter (WisTech Open / Chippewa Valley Technical College, remixed from Open RN), licensed CC BY 4.0. Changes: rewritten and summarized, merged with CDC guidance and Massachusetts exam information, and translated into Haitian Creole, French and Spanish. Content licensed CC BY-NC in the original was not used.",
   faq:"Exam FAQ",faqSub:"What to know about HHA training and evaluation. Confirm details with your agency or school.",skillsCh:"Hands-on skills in this chapter",observed:"Observed by a nurse",chLocked:"The rest of this chapter is available with Premium.",
   guidesLocked:"More chapters are coming. Each chapter follows the official exam blueprint."}
@@ -940,6 +943,7 @@ const views={
    <label class="li static" for="ed"><span>${esc(U("examDate"))}</span><input id="ed" class="date" type="date" value="${S.examDate||""}"></label>
    ${faqOf(t)?`<button type="button" class="li" data-act="nav" data-v="faq"><span>${esc(U("faq"))}</span>${svg("chev",16)}</button>`:""}
    <button type="button" class="li" data-act="nav" data-v="sources"><span>${esc(U("viewSources"))}</span>${svg("chev",16)}</button>
+   <a class="li" href="privacy.html"><span>${esc(U("privacy"))}</span>${svg("chev",16)}</a>
    ${u?`<button type="button" class="li danger" data-act="delAcct"><span>${esc(U("delAcct"))}</span></button>`:""}
    <button type="button" class="li danger" data-act="reset"><span>${esc(U("reset"))} (${tr.code})</span></button>
   </div>
@@ -960,10 +964,10 @@ const views={
   return `<button type="button" class="back" data-act="nav" data-v="home">${esc(U("back"))}</button>
   <section><span class="eyebrow">${tr.code}</span><h1>${esc(U("upTitle"))}</h1><p class="muted">${esc(U("upSub"))}</p></section>
   <div class="plans">
-   <div class="plan hi"><span class="eyebrow">${esc(U("passName"))} · ${tr.code}</span><span class="price">$14.99 <small>${esc(U("passPer"))}</small></span>
+   <div class="plan hi"><span class="eyebrow">${esc(U("passName"))} · ${tr.code}</span><span class="price">$19.99 <small>${esc(U("passPer"))}</small></span>
     <ul><li>${s.total} ${esc(U("qs"))} · ${esc(U("passFor"))} ${strip(LO(tr.name))}</li><li>${esc(U("exam"))}</li><li>${esc(U("skills"))}</li></ul>
     ${hasPrem(t)?`<span class="pill ok">${esc(U("active"))}</span>`:`<button type="button" class="btn full" data-act="buy" data-v="pass">${esc(U("buy"))}</button>`}</div>
-   <div class="plan"><span class="eyebrow">${esc(U("monthName"))}</span><span class="price">$4.99 <small>${esc(U("monthPer"))}</small></span>
+   <div class="plan"><span class="eyebrow">${esc(U("monthName"))}</span><span class="price">$6.99 <small>${esc(U("monthPer"))}</small></span>
     <ul><li>${Object.values(TR).filter(x=>!x.soon).map(x=>x.code).join(" · ")}</li><li>${esc(U("exam"))}</li></ul>
     ${hasPrem("all")?`<span class="pill ok">${esc(U("active"))}</span>`:`<button type="button" class="btn ghost full" data-act="buy" data-v="month">${esc(U("subscribe"))}</button>`}</div>
   </div>

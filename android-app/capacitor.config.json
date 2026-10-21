@@ -1,0 +1,8 @@
+{
+  "appId": "app.lexcellent.paskle",
+  "appName": "Paskle",
+  "webDir": "www",
+  "android": {
+    "backgroundColor": "#13213D"
+  }
+}

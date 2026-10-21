@@ -1,0 +1,19 @@
+{
+  "name": "paskle-android",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Android app for Paskle (Capacitor). The web app in the repo root is copied into www/ and packaged as is.",
+  "scripts": {
+    "sync": "node scripts/sync-www.mjs && npx cap sync android",
+    "icons": "npx capacitor-assets generate --android --iconBackgroundColor \"#13213D\" --iconBackgroundColorDark \"#13213D\" --splashBackgroundColor \"#13213D\" --splashBackgroundColorDark \"#13213D\"",
+    "open": "npx cap open android"
+  },
+  "dependencies": {
+    "@capacitor/android": "8.5.3",
+    "@capacitor/core": "8.5.3"
+  },
+  "devDependencies": {
+    "@capacitor/assets": "3.0.5",
+    "@capacitor/cli": "8.5.3"
+  }
+}

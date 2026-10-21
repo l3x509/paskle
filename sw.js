@@ -1,12 +1,13 @@
 /* Paskle service worker: makes practice work offline.
-   App files are saved on install; language files and fonts are saved the first time they load.
+   App files and fonts are saved on install; language files are saved the first time they load.
    Bump VERSION whenever any file changes, so phones pick up the new version. */
-const VERSION = "paskle-2026-10-21e";
+const VERSION = "paskle-2026-10-21h";
 const CORE = [
   "./", "index.html", "manifest.webmanifest",
   "data/hha-a.js", "data/hha-b.js", "data/hha-c.js", "data/hha-d.js", "data/hha-map.js",
   "data/cna-a.js", "data/ma-cna.js", "data/permit-a.js",
-  "icons/icon-192.png", "icons/icon-512.png", "icons/icon-maskable-512.png"
+  "icons/icon-192.png", "icons/icon-512.png", "icons/icon-maskable-512.png",
+  "fonts/atkinson-hyperlegible-latin-400-normal.woff2", "fonts/atkinson-hyperlegible-latin-700-normal.woff2", "fonts/source-serif-4-latin-opsz-normal.woff2"
 ];
 
 self.addEventListener("install", e => {
@@ -23,8 +24,7 @@ self.addEventListener("fetch", e => {
   const req = e.request;
   if (req.method !== "GET") return;
   const url = new URL(req.url);
-  const fonts = url.hostname === "fonts.googleapis.com" || url.hostname === "fonts.gstatic.com";
-  if (url.origin !== location.origin && !fonts) return;
+  if (url.origin !== location.origin) return;
 
   // Pages: try the network first so updates show, fall back to the saved copy offline.
   if (req.mode === "navigate") {

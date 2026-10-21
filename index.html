@@ -76,7 +76,15 @@ header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background
 .tchip{display:inline-flex;align-items:center;gap:4px;border:1px solid rgba(255,255,255,.28);color:var(--on-navy);background:transparent;border-radius:999px;padding:5px 11px;font-weight:700;font-size:.85rem;cursor:pointer}
 .tchip[hidden]{display:none}
 .langsel{font-size:.86rem;font-weight:700;color:var(--on-navy);background:var(--navy-2);border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:7px 12px;max-width:52vw;cursor:pointer}
-.langsel option{color:#13213D;background:#fff}
+.langsel{display:inline-flex;align-items:center;gap:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.langsel span{overflow:hidden;text-overflow:ellipsis}
+.langveil{position:fixed;inset:0;z-index:60;background:rgba(10,18,36,.35);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
+.langveil[hidden],.langmenu[hidden]{display:none}
+.langmenu{position:fixed;z-index:61;min-width:220px;max-width:calc(100vw - 32px);background:var(--surface);color:var(--fg);border:1px solid var(--line);border-radius:16px;box-shadow:0 12px 32px rgba(0,0,0,.28);padding:6px;display:flex;flex-direction:column}
+.langmenu button{display:flex;align-items:center;justify-content:space-between;gap:16px;border:0;background:none;color:inherit;font:inherit;font-size:1rem;font-weight:600;text-align:left;padding:13px 14px;border-radius:10px;cursor:pointer;min-height:48px}
+.langmenu button:hover,.langmenu button:focus-visible{background:var(--accent-soft)}
+.langmenu button[aria-checked="true"]{color:var(--accent)}
+.langmenu .tick{width:18px;height:18px;flex:none}
 main .langsel{color:var(--fg);background:var(--bg);border-color:var(--line);max-width:100%}
 .offline{background:var(--brass-soft);color:var(--fg);font-size:.88rem;font-weight:700;text-align:center;padding:6px 16px}
 
@@ -150,6 +158,8 @@ a.li{color:inherit;text-decoration:none}
 .topic .cnt.bad{color:var(--bad);font-weight:700}
 .secthead{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
 .secthead .back{font-size:.92rem}
+.back.bk{display:inline-flex;align-items:center;min-height:44px;padding:9px 18px 9px 14px;margin-left:-4px;font-size:1.06rem;border-radius:999px;background:var(--accent-soft);color:var(--fg)}
+.back.bk:hover{filter:brightness(.97)}
 
 .pill{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:99px;font-size:.8rem;font-weight:700;white-space:nowrap}
 .pill.ok{background:var(--ok-bg);color:var(--ok)}
@@ -296,17 +306,14 @@ body.ob nav.tabs{display:none}
 <header class="top">
   <div class="bar">
     <div class="lead"><div class="brand"><b>Paskle<span>.</span></b><small id="tagline">Egzamen an Kreyòl, ak Anglè bò kote</small></div><button type="button" class="tchip" id="trackChip" data-act="nav" data-v="switch" hidden><b>HHA</b><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button></div>
-    <select class="langsel" id="langSel" data-chg="lang" aria-label="Lang / Langue / Idioma / Language">
-      <option value="both">Kreyòl + English</option>
-      <option value="fr">Français + English</option>
-      <option value="es">Español + English</option>
-      <option value="en">English</option>
-    </select>
+    <button type="button" class="langsel" id="langSel" data-act="langMenu" aria-haspopup="menu" aria-expanded="false" aria-label="Lang / Langue / Idioma / Language"><span id="langCur">Kreyòl + English</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
   </div>
 </header>
 
 <div class="offline" id="offline" role="status" hidden></div>
 <main id="app" aria-live="polite"></main>
+<div class="langveil" id="langVeil" data-act="langClose" hidden></div>
+<div class="langmenu" id="langMenu" role="menu" hidden></div>
 
 <nav class="tabs" aria-label="Navigation">
   <div class="in">
@@ -662,6 +669,7 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",
 /* Language modes: both (Kreyòl + English), fr (Français + English), es (Español + English), en (English).
    French and Spanish come from data/i18n-*.js, keyed by the English string; a missing entry falls back to English. */
 const LANGS=["both","fr","es","en"];
+const LANG_NAMES={both:"Kreyòl + English",fr:"Français + English",es:"Español + English",en:"English"};
 const isX=()=>S.lang==="fr"||S.lang==="es";
 const TX=en=>{const d=(window.I18N||{})[S.lang];return d?d[en]:undefined};
 /* Load data/i18n-fr.js or -es.js only when that mode is chosen; until it arrives the page shows English. */
@@ -857,9 +865,9 @@ const views={
   if(st===0)return `${dots}<section><h1>${esc(U("obLang"))}</h1><p class="muted">${esc(U("obLangSub"))}</p></section>
    <div class="choices">${[["both","Kreyòl + English","Kreyòl ak Anglè bò kote"],["fr","Français + English","Français, avec l'anglais à côté"],["es","Español + English","Español, con el inglés al lado"],["en","English","English only"]].map(([v,a,b])=>`<button type="button" class="choice" data-act="obLang" data-v="${v}"><b>${a}</b><span class="muted small">${b}</span></button>`).join("")}</div>
 `;
-  if(st===1)return `${dots}<button type="button" class="back" data-act="obStep" data-v="0">${esc(U("back"))}</button><section><h1>${esc(U("obExam"))}</h1><p class="muted">${esc(U("obExamSub"))}</p></section>
+  if(st===1)return `${dots}<button type="button" class="back bk" data-act="obStep" data-v="0">${esc(U("back"))}</button><section><h1>${esc(U("obExam"))}</h1><p class="muted">${esc(U("obExamSub"))}</p></section>
    <div class="choices">${Object.keys(TR).map(t=>TR[t].soon?`<div class="choice soon" aria-disabled="true"><span class="code">${TR[t].code}</span><span><b>${LO(TR[t].name)}</b><span class="pill lock">${esc(U("soon"))}</span></span></div>`:`<button type="button" class="choice" data-act="obExam" data-v="${t}"><span class="code">${TR[t].code}</span><span><b>${LO(TR[t].name)}</b></span></button>`).join("")}</div>`;
-  return `${dots}<button type="button" class="back" data-act="obStep" data-v="1">${esc(U("back"))}</button><section><h1>${esc(U("obDate"))}</h1><p class="muted">${esc(U("obDateSub"))}</p></section>
+  return `${dots}<button type="button" class="back bk" data-act="obStep" data-v="1">${esc(U("back"))}</button><section><h1>${esc(U("obDate"))}</h1><p class="muted">${esc(U("obDateSub"))}</p></section>
    <label class="eyebrow" for="obd">${esc(U("examDate"))}</label><input id="obd" class="search" type="date" min="${today0().toISOString().slice(0,10)}" value="${S.examDate||""}">
    <button type="button" class="btn full" data-act="obDone">${esc(U("obGo"))}</button>
    <button type="button" class="btn ghost full" data-act="obSkip">${esc(U("obSkip"))}</button>`;
@@ -918,14 +926,14 @@ const views={
  },
  glossary(){
   const code=TR[T()].code,all=!!V.all,rows=GL.filter(g=>(all||g[2]===code)&&!soonCodes().includes(g[2]));
-  return `<button type="button" class="back" data-act="nav" data-v="learn">${esc(U("back"))}</button>
+  return `<button type="button" class="back bk" data-act="nav" data-v="learn">${esc(U("back"))}</button>
   <section><h1>${esc(U("glossTitle"))}</h1><p class="muted">${esc(U("glossSub"))}</p>
    <label for="gq" class="eyebrow">${esc(U("search"))}</label><input id="gq" class="search" type="search" placeholder="${esc(U("search"))}" autocomplete="off">
    <label class="small"><input type="checkbox" data-act="allTerms" ${all?"checked":""}> ${esc(U("allTerms"))}</label></section>
   <div class="list" id="gl">${rows.map(g=>`<div class="gl" data-s="${esc((g[0]+' '+LT(g[0],g[1])).toLowerCase())}"><b>${esc(g[0])}</b><span>${esc(LT(g[0],g[1]))}</span><span class="tag">${all?g[2]:""}</span></div>`).join("")}</div>`;
  },
  switch(){
-  return `<button type="button" class="back" data-act="nav" data-v="home">${esc(U("back"))}</button>
+  return `<button type="button" class="back bk" data-act="nav" data-v="home">${esc(U("back"))}</button>
   <section><h1>${esc(U("switchTitle"))}</h1><p class="muted">${esc(U("switchSub"))}</p></section>
   <div class="choices">${Object.keys(TR).map(t=>{if(TR[t].soon)return `<div class="choice soon" aria-disabled="true"><span class="code">${TR[t].code}</span><span><b>${LO(TR[t].name)}</b><span class="pill lock">${esc(U("soon"))}</span></span></div>`;const s=trackStats(t);return `<button type="button" class="choice ${t===S.track?"cur":""}" data-act="setTrack" data-v="${t}"><span class="code">${TR[t].code}</span><span><b>${LO(TR[t].name)}</b><span class="small muted">${s.ok}/${s.total} ${esc(U("mastered"))}${hasPrem(t)?" · Premium":""}</span></span></button>`}).join("")}</div>`;
  },
@@ -939,7 +947,7 @@ const views={
    ${ent?`<button type="button" class="btn ghost" data-act="nav" data-v="upgrade">${esc(U("manage"))}</button>`:`<button type="button" class="btn" data-act="nav" data-v="upgrade">${esc(U("unlock"))}</button>`}</div>
   <div class="list">
    <button type="button" class="li" data-act="nav" data-v="switch"><span>${esc(U("exam_"))}</span><span class="cnt"><b>${tr.code}</b> ${svg("chev",16)}</span></button>
-   <label class="li static" for="acctLang"><span>${esc(U("lang"))}</span><select class="langsel" id="acctLang" data-chg="lang">${[["both","Kreyòl + English"],["fr","Français + English"],["es","Español + English"],["en","English"]].map(([v,a])=>`<option value="${v}" ${S.lang===v?"selected":""}>${a}</option>`).join("")}</select></label>
+   <button type="button" class="li" data-act="langMenu" aria-haspopup="menu"><span>${esc(U("lang"))}</span><span class="pill">${esc(LANG_NAMES[S.lang])}</span></button>
    <label class="li static" for="ed"><span>${esc(U("examDate"))}</span><input id="ed" class="date" type="date" value="${S.examDate||""}"></label>
    ${faqOf(t)?`<button type="button" class="li" data-act="nav" data-v="faq"><span>${esc(U("faq"))}</span>${svg("chev",16)}</button>`:""}
    <button type="button" class="li" data-act="nav" data-v="sources"><span>${esc(U("viewSources"))}</span>${svg("chev",16)}</button>
@@ -950,7 +958,7 @@ const views={
   <p class="foot">${esc(U("disclaimer"))}</p>`;
  },
  auth(){
-  return `<button type="button" class="back" data-act="authBack">${esc(U("back"))}</button>
+  return `<button type="button" class="back bk" data-act="authBack">${esc(U("back"))}</button>
   <section><h1>${esc(U("authTitle"))}</h1><p class="muted">${esc(U("authSub"))}</p></section>
   ${V.why?`<div class="banner"><span class="small">${esc(U("needAcct"))}</span></div>`:""}
   <button type="button" class="btn ghost full" data-act="google">${esc(U("google"))}</button>
@@ -961,7 +969,7 @@ const views={
  },
  upgrade(){
   const t=T(),tr=TR[t],s=trackStats(t);
-  return `<button type="button" class="back" data-act="nav" data-v="home">${esc(U("back"))}</button>
+  return `<button type="button" class="back bk" data-act="nav" data-v="home">${esc(U("back"))}</button>
   <section><span class="eyebrow">${tr.code}</span><h1>${esc(U("upTitle"))}</h1><p class="muted">${esc(U("upSub"))}</p></section>
   <div class="plans">
    <div class="plan hi"><span class="eyebrow">${esc(U("passName"))} · ${tr.code}</span><span class="price">$19.99 <small>${esc(U("passPer"))}</small></span>
@@ -988,7 +996,7 @@ Object.assign(views,{
    <span class="term"><span class="muted">${esc(U("term"))}:</span><b>${esc(x.k[0])}</b><span>=</span><span>${esc(LT(x.k[0],x.k[1]))}</span></span>${qSrc(x)}${link}</div>`:"";
   const prog=n<=20?`<div class="segs" aria-hidden="true">${sess.list.map((id,i)=>{const a=sess.ans[id];const c=i===sess.i&&!showFb?"on":a===undefined?"":exam?"done":a===byId(id).c?"ok":"bad";return `<i class="${c}"></i>`}).join("")}</div>`
    :`<div class="qprog" aria-hidden="true"><i style="width:${Math.round((sess.i+(answered?1:0))/n*100)}%"></i></div>`;
-  return `<div class="qtop"><button type="button" class="back" data-act="quit">${esc(U("back"))}</button>
+  return `<div class="qtop"><button type="button" class="back bk" data-act="quit">${esc(U("back"))}</button>
    ${exam?`<span class="timer" id="timer" aria-label="${esc(U("timeLeft"))}">${fmt(sess.end-Date.now())}</span>`:`<span class="pill topic">${esc(P(tr.topics[x.tp]))}</span>`}</div>
   <div class="qhead"><span class="qcount">${esc(U("question"))} <b>${sess.i+1}</b> / ${n}</span>${exam?`<span class="small muted">${esc(P(tr.topics[x.tp]))}</span>`:""}</div>
   ${prog}
@@ -1006,7 +1014,7 @@ Object.assign(views,{
    const rows=Object.keys(by).sort((a,b)=>by[a].ok/by[a].n-by[b].ok/by[b].n);
    return `<section><h2>${esc(U("byArea"))}</h2><div class="list">${rows.map(k=>{const b=by[k],q=Math.round(b.ok/b.n*100);
     return `<button type="button" class="topic" data-act="practice" data-v="${k}"><span>${LO(tr.topics[k])}</span><span class="cnt ${q>=p?"ok":""}">${b.ok}/${b.n}</span>${gauge(q,p,"sm")}</button>`}).join("")}</div></section>`})():"";
-  return `<button type="button" class="back" data-act="quit">${esc(U("back"))}</button>
+  return `<button type="button" class="back bk" data-act="quit">${esc(U("back"))}</button>
   <section><span class="eyebrow">${tr.code}: ${esc(U("result"))}</span>
    ${sess.timeUp?`<p class="muted">${esc(U("timeUp"))}</p>`:''}
    <div class="score"><b>${pct}%</b><span class="muted">${right}/${n}</span></div>
@@ -1026,7 +1034,7 @@ Object.assign(views,{
   const blocks=b=>{let out="",mode=null;const close=()=>{if(mode)out+=mode==="n"?"</ol>":"</ul>";mode=null};
    b.forEach(([k,ht,en])=>{if(k==="p"){close();out+=`<p>${L(ht,en)}</p>`}else{if(mode!==k){close();out+=k==="n"?'<ol class="gl-list">':'<ul class="gl-list">';mode=k}out+=`<li>${L(ht,en)}</li>`}});close();return out};
   const open=hasPrem(g.t)||g.free||(g.t==="hha"&&T()==="cna"&&hasPrem("cna")),vis=g.sections.map((s,i)=>open||i===0||i===V.sec);
-  return `${V.from?`<button type="button" class="back" data-act="backFrom">${esc(U("backQuiz"))}</button>`:`<button type="button" class="back" data-act="nav" data-v="learn">${esc(U("back"))}</button>`}
+  return `${V.from?`<button type="button" class="back bk" data-act="backFrom">${esc(U("backQuiz"))}</button>`:`<button type="button" class="back bk" data-act="nav" data-v="learn">${esc(U("back"))}</button>`}
   <section><span class="eyebrow">${tr.code}: ${esc(U("chapter"))} ${g.n}</span><h1>${LO(g.title)}</h1><p class="muted small">${LO(g.blueprint)}</p></section>
   ${g.observed?`<span class="pill ok" style="align-self:flex-start">${esc(U("observed"))}</span>`:""}
   ${g.sections.map((s,i)=>!vis[i]?"":`<section class="gsec${i===V.sec?" hl":""}" id="sec-${i}"><h2>${LO(s.h)}</h2>${s.sign?signSvg(s.sign,"gsign"):""}${blocks(s.b)}<p class="cite">${esc(U("srcLabel"))}: ${s.src.map(id=>`<a href="${SRC[id].url}" target="_blank" rel="noopener">${esc(SRC[id].name)}</a>`).join(" · ")}${s.pg?`, ${esc(U("pg"))} ${esc(s.pg)}`:""}</p></section>`).join("")}
@@ -1039,7 +1047,7 @@ Object.assign(views,{
 
  faq(){
   const t=T(),F=faqOf(t)||[];
-  return `<button type="button" class="back" data-act="nav" data-v="home">${esc(U("back"))}</button>
+  return `<button type="button" class="back bk" data-act="nav" data-v="home">${esc(U("back"))}</button>
   <section><span class="eyebrow">${TR[t].code}</span><h1>${esc(U("faq"))}</h1><p class="muted">${esc(U(t==="permit"?"faqSubPermit":"faqSub"))}</p></section>
   ${(()=>{const G=t==="permit"?window.PERMIT_FAQ_GROUPS||{}:{};let cur=null;return F.map(f=>{const h=f[6]&&f[6]!==cur&&G[f[6]]?`<h2 class="faqh">${L(G[f[6]][0],G[f[6]][1])}</h2>`:"";cur=f[6];
    return h+`<details class="lesson"><summary><span><b>${L(f[0],f[1])}</b></span></summary><p>${L(f[2],f[3])}</p><p class="cite">${esc(U("srcLabel"))}: ${f[4].map(id=>`<a href="${SRC[id].url}" target="_blank" rel="noopener">${esc(SRC[id].name)}</a>${id==="S7"&&f[5]?`, ${esc(U("pg"))} ${esc(f[5])}`:""}`).join(" · ")}</p></details>`}).join("")})()}
@@ -1048,7 +1056,7 @@ Object.assign(views,{
 
  sources(){
   const lic=W({en:"License / use",ht:"Lisans / itilizasyon",fr:"Licence / utilisation",es:"Licencia / uso"});
-  return `<button type="button" class="back" data-act="nav" data-v="account">${esc(U("back"))}</button>
+  return `<button type="button" class="back bk" data-act="nav" data-v="account">${esc(U("back"))}</button>
   <section><h1>${esc(U("sourcesTitle"))}</h1><p class="muted">${esc(U("sourcesSub"))}</p></section>
   <div class="list">${Object.keys(SRC).map(id=>`<div class="gl"><b><a href="${SRC[id].url}" target="_blank" rel="noopener">${esc(SRC[id].name)}</a></b><span class="small muted">${lic}: ${esc(SRC[id].lic)}</span><span class="tag">${id}</span></div>`).join("")}</div>
   <p class="note" style="margin:0">${esc(U("attrib"))} <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a></p>
@@ -1093,7 +1101,7 @@ function render(){
  document.body.classList.toggle("ob",ob);
  document.body.classList.toggle("focus",V.view==="quiz");
  document.documentElement.lang=S.lang==="both"?"ht":S.lang;
- document.getElementById("langSel").value=S.lang;
+ document.getElementById("langCur").textContent=LANG_NAMES[S.lang];
  document.getElementById("tagline").textContent=U("tag");
  const off=document.getElementById("offline");off.hidden=navigator.onLine!==false;off.textContent=U("offline");
  const tc=document.getElementById("trackChip");tc.hidden=ob||!T();if(T())tc.querySelector("b").textContent=TR[T()].code;
@@ -1111,6 +1119,19 @@ function render(){
 }
 const H={
  lang:v=>{if(!LANGS.includes(v))return;S.lang=v;save();render();needLang(v,render)},
+ /* Language menu: our own pop-up under the button that opened it (the phone's built-in list dims the whole screen) */
+ langMenu:(v,btn)=>{const m=document.getElementById("langMenu"),veil=document.getElementById("langVeil");
+  if(!m.hidden){H.langClose();return}
+  const tick='<svg class="tick" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg>';
+  m.innerHTML=LANGS.map(l=>`<button type="button" role="menuitemradio" aria-checked="${l===S.lang}" data-act="langPick" data-v="${l}"><span>${LANG_NAMES[l]}</span>${l===S.lang?tick:""}</button>`).join("");
+  m.hidden=false;veil.hidden=false;
+  const r=(btn||document.getElementById("langSel")).getBoundingClientRect(),w=m.offsetWidth,h=m.offsetHeight;
+  m.style.left=Math.max(16,Math.min(r.right-w,innerWidth-w-16))+"px";
+  m.style.top=(r.bottom+8+h>innerHeight-8?Math.max(8,r.top-8-h):r.bottom+8)+"px";
+  document.getElementById("langSel").setAttribute("aria-expanded","true");
+  (m.querySelector('[aria-checked="true"]')||m.querySelector("button")).focus()},
+ langClose:()=>{document.getElementById("langMenu").hidden=true;document.getElementById("langVeil").hidden=true;document.getElementById("langSel").setAttribute("aria-expanded","false")},
+ langPick:v=>{H.langClose();H.lang(v)},
  nav:v=>go(v),
  obStep:v=>go("onboard",{step:+v}),
  obLang:v=>{S.lang=v;save();go("onboard",{step:1});needLang(v,render)},
@@ -1142,6 +1163,7 @@ const H={
  authBack:()=>{const n=V.next;if(n&&Acct.user()){go(n.view,n)}else go(n?n.view:"account",n||{})},
  buy:v=>{if(!Acct.user()){go("auth",{why:1,next:{view:"upgrade"}});return}Acct.buy(v,T());render()}
 };
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!document.getElementById("langMenu").hidden)H.langClose()});
 document.addEventListener("click",e=>{const b=e.target.closest("[data-act]");if(!b)return;const f=H[b.dataset.act];if(f)f(b.dataset.v,b)});
 document.addEventListener("change",e=>{const c=e.target.closest("[data-chg]");if(c&&H[c.dataset.chg])H[c.dataset.chg](c.value)});
 render();

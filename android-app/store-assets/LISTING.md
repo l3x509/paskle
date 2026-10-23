@@ -1,7 +1,7 @@
 # Google Play listing for Paskle
 
 Package name: `app.lexcellent.paskle` (permanent, can't be changed after the first upload)
-Category: Education · Contains ads: No · In-app purchases: see "Before you submit" in ../README.md
+Category: Education · Contains ads: No · In-app purchases: No (Premium is switched off in this version; see "Before you submit" in ../README.md)
 Privacy policy URL: https://paskleapp.com/privacy.html
 Contact email: privacy@paskleapp.com (create this mailbox in Hostinger first)
 
@@ -43,7 +43,13 @@ HOW IT HELPS
 LANGUAGES
 Kreyòl + English · Français + English · Español + English · English
 
-Paskle is an independent study tool. It is not affiliated with the Massachusetts RMV, the Department of Public Health or any testing company. Content is based on free public sources, such as the Massachusetts Driver's Manual and open nursing assistant textbooks, and each source is cited in the app. Always check the latest official manual.
+SOURCES
+• Massachusetts Driver's Manual (RMV): https://www.mass.gov/lists/drivers-manuals
+• Federal home health aide training rule, 42 CFR 484.80: https://www.ecfr.gov/current/title-42/chapter-IV/subchapter-G/part-484/subpart-B/section-484.80
+• CMS State Operations Manual, Home Health: https://www.cms.gov/Regulations-and-Guidance/Guidance/Manuals/downloads/som107ap_b_hha.pdf
+• CDC infection control: https://www.cdc.gov/infection-control/hcp/basics/standard-precautions.html
+
+Paskle is an independent study tool. It is not affiliated with the Massachusetts RMV, the Department of Public Health or any testing company. Content is based on free public sources, such as the Massachusetts Driver's Manual and open nursing assistant textbooks, and each source is cited in the app. Paskle is not a government app. Always check the latest official manual.
 
 ---
 
@@ -72,7 +78,13 @@ COMMENT PASKLE VOUS AIDE
 • Les termes anglais clés avec leur sens en français.
 • Fonctionne hors ligne après la première visite.
 
-Paskle est un outil d'étude indépendant, sans lien avec le RMV du Massachusetts, le département de la Santé publique ou un organisme d'examen. Le contenu repose sur des sources publiques gratuites, citées dans l'application.
+SOURCES
+• Manuel du conducteur du Massachusetts (RMV) : https://www.mass.gov/lists/drivers-manuals
+• Règle fédérale sur la formation des aides à domicile, 42 CFR 484.80 : https://www.ecfr.gov/current/title-42/chapter-IV/subchapter-G/part-484/subpart-B/section-484.80
+• Manuel des opérations des États de CMS, soins à domicile : https://www.cms.gov/Regulations-and-Guidance/Guidance/Manuals/downloads/som107ap_b_hha.pdf
+• CDC, prévention des infections : https://www.cdc.gov/infection-control/hcp/basics/standard-precautions.html
+
+Paskle est un outil d'étude indépendant, sans lien avec le RMV du Massachusetts, le département de la Santé publique ou un organisme d'examen. Le contenu repose sur des sources publiques gratuites, citées dans l'application. Paskle n'est pas une application gouvernementale.
 
 ---
 
@@ -101,7 +113,13 @@ CÓMO LE AYUDA
 • Términos clave en inglés con su significado en español.
 • Funciona sin conexión después de la primera visita.
 
-Paskle es una herramienta de estudio independiente, sin relación con el RMV de Massachusetts, el Departamento de Salud Pública ni ninguna empresa de exámenes. El contenido se basa en fuentes públicas gratuitas, citadas en la aplicación.
+FUENTES
+• Manual del conductor de Massachusetts (RMV): https://www.mass.gov/lists/drivers-manuals
+• Norma federal de capacitación de asistentes de salud en el hogar, 42 CFR 484.80: https://www.ecfr.gov/current/title-42/chapter-IV/subchapter-G/part-484/subpart-B/section-484.80
+• Manual de Operaciones Estatales de CMS, salud en el hogar: https://www.cms.gov/Regulations-and-Guidance/Guidance/Manuals/downloads/som107ap_b_hha.pdf
+• CDC, control de infecciones: https://www.cdc.gov/infection-control/hcp/basics/standard-precautions.html
+
+Paskle es una herramienta de estudio independiente, sin relación con el RMV de Massachusetts, el Departamento de Salud Pública ni ninguna empresa de exámenes. El contenido se basa en fuentes públicas gratuitas, citadas en la aplicación. Paskle no es una aplicación del gobierno.
 
 ---
 
@@ -123,7 +141,7 @@ Paskle es una herramienta de estudio independiente, sin relación con el RMV de 
 | Content rating | Fill in the questionnaire as an Education/Reference app: no violence, no sexual content, no profanity, no gambling, no user-to-user chat, no location sharing. Expected rating: Everyone |
 | Target audience | 16–17 and 18+ (do not select under 13, which brings in the Families policy) |
 | News app | No |
-| Data safety | Does the app collect or share any of the required user data types? **No.** Progress and settings stay on the device and are never sent anywhere |
-| Government apps | No (Paskle is not made by or for a government agency) |
+| Data safety | Does the app collect or share any of the required user data types? **No.** Progress and settings stay on the device and are never sent anywhere. The app has no accounts, so no account-deletion link is needed. |
+| Government apps | No (Paskle is not made by or for a government agency). The full description lists the .gov sources and says Paskle is not a government app, as Play's misleading-claims policy asks for apps that show government information |
 | Financial features | None |
 | Health apps | Not a health app (it's exam preparation) |

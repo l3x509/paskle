@@ -6,7 +6,7 @@ Live site: [paskleapp.com](https://paskleapp.com)
 
 ## What's inside
 
-- **One-page app:** `index.html` holds the app's code, screens and styles. It works offline (`sw.js`) and can be installed on a phone (`manifest.webmanifest`). Fonts are served from `fonts/` (SIL Open Font License). Privacy policy: `privacy.html`.
+- **One-page app:** `index.html` holds the app's code, screens and styles. It works offline (`sw.js`) and can be installed on a phone (`manifest.webmanifest`). Fonts are served from `fonts/` (SIL Open Font License). Privacy policy: `privacy.html`; terms of use: `terms.html`.
 - **Study guides and questions:** in `data/`.
   - HHA: 14 federal subjects, `data/hha-*.js`.
   - CNA: Massachusetts written exam outline, `data/cna-a.js` and `data/ma-cna.js`.
@@ -29,7 +29,7 @@ node tools/check-dupes.js                 # flags questions that test the same f
 node tools/i18n-check.js                  # lists missing or stale French/Spanish strings
 ```
 
-After any change, bump `VERSION` in `sw.js` so installed copies update.
+After any change, bump `VERSION` in `sw.js` so installed copies update. The version shown in Account is `APP_VERSION` in `index.html`; keep it equal to `versionName` in the Android build.
 
 ## Editing the Kreyòl text
 
@@ -42,6 +42,10 @@ python3 tools/kreyol_import.py kreyol-strings.xlsx   # puts the "Your edit" colu
 
 The Google Play app is the same web app packaged with Capacitor. Build steps, store listing text and graphics are in `android-app/`.
 
+## Switches
+
+Near the top of the script in `index.html`, `CONFIG={payments:false,accounts:false}` hides Premium and sign-in. With both off, everything is free and nothing is locked. Turn them on only once Google Play Billing and real accounts (with account deletion) exist.
+
 ## Content rules
 
 - Facts come from free, public or openly licensed sources only, and every source is cited. The full list is in the app under Account → Sources.
@@ -51,6 +55,6 @@ The Google Play app is the same web app packaged with Capacitor. Build steps, st
 
 ## Hosting
 
-The site is hosted on Hostinger, and this repo only holds the files. Hostinger's Git deployment (hPanel → Advanced → Git) publishes `main` to `public_html` whenever new commits are pushed.
+The site is hosted on Hostinger, and this repo only holds the files. Hostinger's Git deployment (hPanel → Advanced → Git) publishes `main` to `public_html` whenever new commits are pushed. `.htaccess` sends visitors to https, hides the project folders (`content/`, `tools/`, `android-app/`) from the web, and tells browsers to check for a new app page and service worker on each visit. `robots.txt` and `sitemap.xml` are for search engines.
 
 © Lexcellent Solutions LLC

@@ -44,9 +44,18 @@ python3 tools/make_brand.py     # from the repo root
 cd android-app && npm run icons # rebuild the Android icon and splash files
 ```
 
+## How the app build differs from the website
+
+`npm run sync` copies the web app into `www/` and adds `vendor/capacitor.js`, which only the app build loads. Inside the app:
+
+- the phone's Back button goes back one screen, and closes the app from the home screen (`@capacitor/app`);
+- "Listen" uses the phone's text-to-speech engine (`@capacitor-community/text-to-speech`), because Android's WebView has no built-in speech;
+- the website's offline service worker is not used, since the app already has all files on the phone;
+- the status bar and navigation bar colors follow the app's light or dark theme.
+
 ## Before you submit
 
-The app still shows the demo Premium unlock and demo sign-in. Google Play requires Google Play Billing for selling digital content inside the app, so either:
-
-- launch the first version free, with the Premium and sign-in screens hidden in the app build, or
-- connect Google Play Billing before release.
+- **Premium and sign-in are switched off** for now (`CONFIG={payments:false,accounts:false}` near the top of the script in `index.html`). Everything is free and nothing is locked, on the website and in the app. Google Play requires Google Play Billing for selling digital content in an app, and requires in-app and web account deletion once accounts exist, so turn these on only after billing and real accounts are built.
+- **Create the privacy@paskleapp.com mailbox** in Hostinger. It is the contact on the privacy page and in the listing.
+- **Settle the app name.** The package name `app.lexcellent.paskle` can never change after the first upload.
+- **Test on a real phone** (Back button, Listen, dark mode, offline) with an internal-testing build before production.

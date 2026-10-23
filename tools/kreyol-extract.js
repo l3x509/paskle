@@ -5,7 +5,7 @@ const fs=require('fs'),path=require('path'),vm=require('vm');
 const root=path.resolve(process.argv[2]||'.');
 const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
 const js=html.match(/<script>\n([\s\S]*?)<\/script>/)[1];
-const win={HHA:[]};const ctx={window:win,localStorage:{getItem:()=>null,setItem(){}},document:{getElementById:()=>({setAttribute(){},querySelector:()=>({}),hidden:0}),querySelectorAll:()=>[],addEventListener(){},documentElement:{},body:{classList:{toggle(){}}}},confirm:()=>false,console};
+const win={HHA:[],addEventListener(){}};const ctx={window:win,history:{pushState(){},replaceState(){},back(){}},localStorage:{getItem:()=>null,setItem(){}},document:{getElementById:()=>({setAttribute(){},querySelector:()=>({}),hidden:0}),querySelectorAll:()=>[],addEventListener(){},documentElement:{},body:{classList:{toggle(){}}}},confirm:()=>false,console};
 vm.createContext(ctx);
 for(const f of ['hha-a','hha-b','hha-c','hha-d','hha-map','cna-a','ma-cna','permit-a'])vm.runInContext(fs.readFileSync(path.join(root,'data',f+'.js'),'utf8'),ctx);
 vm.runInContext(js.replace(/\nrender\(\);[\s\S]*$/,'\n')+'\n;globalThis.__X={UI,TR,Q,LS,GUIDES,GL};',ctx);

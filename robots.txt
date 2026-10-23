@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /content/
+Disallow: /tools/
+Disallow: /android-app/
+
+Sitemap: https://paskleapp.com/sitemap.xml

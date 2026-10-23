@@ -1,0 +1,17 @@
+# Paskle website settings (Hostinger / Apache-compatible).
+# Send every visit to the secure https:// address (the rule Hostinger's own help pages give).
+RewriteEngine On
+RewriteCond %{HTTPS} off
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# The repo also holds project files that are not part of the website; answer "not found" for them.
+RedirectMatch 404 ^/(content|tools|android-app|__pycache__)(/.*)?$
+RedirectMatch 404 ^/(README\.md|\.gitignore)$
+RedirectMatch 404 /\.git(/.*)?$
+
+# Always check for a new app page and service worker, so updates reach people quickly.
+<IfModule mod_headers.c>
+  <FilesMatch "^(index\.html|sw\.js|manifest\.webmanifest)$">
+    Header set Cache-Control "no-cache"
+  </FilesMatch>
+</IfModule>

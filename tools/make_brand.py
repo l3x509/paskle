@@ -5,7 +5,7 @@ Writes:
   brand/paskle-wordmark-dark.svg, brand/paskle-wordmark-light.svg, brand/paskle-k.svg, brand/paskle-icon.svg
   icons/icon.svg, icons/icon-192.png, icons/icon-512.png, icons/icon-maskable-512.png
   android-app/assets/icon-only.png, icon-foreground.png, icon-background.png, splash.png, splash-dark.png
-  android-app/store-assets/play-icon-512.png, feature-graphic.png
+  android-app/store-assets/play-icon-512.png, feature-graphic.png, brand/og-image.png
 and prints the inline SVG used in the index.html header."""
 import asyncio, os
 from fontTools.ttLib import TTFont
@@ -118,6 +118,8 @@ def main():
                 await pg.screenshot(path=os.path.join(ROOT, rel), clip={"x": 0, "y": 0, "width": w, "height": h}); await pg.close()
             await b.close()
     asyncio.run(render())
+    import shutil   # the website's link-preview image (og:image) is the feature graphic
+    shutil.copyfile(os.path.join(ROOT, "android-app/store-assets/feature-graphic.png"), os.path.join(ROOT, "brand/og-image.png"))
     print("brand files written")
 
 if __name__ == "__main__":

@@ -278,6 +278,8 @@ details.lesson[open] summary{border-bottom:1px solid var(--line)}
 .search:focus{border-color:var(--fg);outline:none}
 .gl{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto;gap:10px;align-items:baseline;padding:11px 16px;border-top:1px solid var(--line)}
 .gl:first-child{border-top:0}
+.gl[hidden],.gl-none[hidden]{display:none}
+.gl-none{padding:14px 16px;color:var(--muted)}
 .gl .tag{font-size:.74rem;font-weight:700;color:var(--muted)}
 
 /* Plans */
@@ -365,7 +367,7 @@ const UI={
   noneMissed:"Ou pa gen erè pou revize nan egzamen sa a.",noneAvail:"Pa gen kesyon gratis nan sijè sa a.",
   unlock:"Debloke ak Premium",freeLimit:"Vèsyon gratis: kesyon echantiyon nan chak sijè, chapit gratis yo, ak yon mini simulasyon 5 kesyon.",
   lessonsTitle:"Leson ak konpetans",lessonsSub:"Etap pa etap, an Kreyòl ak Anglè.",steps:"etap",
-  glossTitle:"Glosè medikal ak wout",glossSub:"Mo Anglè w ap wè sou egzamen an, ak siyifikasyon yo an Kreyòl.",search:"Chèche yon mo…",
+  glossTitle:"Glosè medikal ak wout",glossSub:"Mo Anglè w ap wè sou egzamen an, ak siyifikasyon yo an Kreyòl.",search:"Chèche yon mo…",noTerms:"Pa gen mo ki koresponn.",
   premTitle:"Paskle Premium",premSub:"Tout kesyon, simulasyon san limit, tout leson.",demoOn:"Aktive Premium (demo)",demoOff:"Retounen nan vèsyon gratis",
   demoNote:"Vèsyon demo: pa gen peman. Pri yo se pri pwopoze.",isPrem:"Premium aktive (demo)",
   roadmap:"Plan kontni",now:"Kounye a",target:"Objektif v1",timeUp:"Tan an fini.",
@@ -386,7 +388,7 @@ const UI={
   noneMissed:"You have no mistakes to review for this exam.",noneAvail:"No free questions in this topic.",
   unlock:"Unlock with Premium",freeLimit:"Free version: sample questions in every topic, the free chapters, and one 5-question mini simulation.",
   lessonsTitle:"Lessons and skills",lessonsSub:"Step by step, in Kreyòl and English.",steps:"steps",
-  glossTitle:"Medical and road glossary",glossSub:"English words you will see on the exam, with their meaning in Kreyòl.",search:"Search a word…",
+  glossTitle:"Medical and road glossary",glossSub:"English words you will see on the exam, with their meaning in Kreyòl.",search:"Search a word…",noTerms:"No matching words.",
   premTitle:"Paskle Premium",premSub:"Every question, unlimited exam simulations, every lesson.",demoOn:"Turn on Premium (demo)",demoOff:"Back to the free version",
   demoNote:"Demo version: no payment is taken. Prices are proposed prices.",isPrem:"Premium is on (demo)",
   roadmap:"Content plan",now:"Now",target:"v1 target",timeUp:"Time is up.",
@@ -662,6 +664,7 @@ const SRC={
 };
 
 /* ---------- Glossary [EN, HT, track] ---------- */
+const fold=x=>String(x).normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
 const GL=[
  ["hand hygiene","ijyèn men","CNA"],["gloves","gan","CNA"],["gown","rad izolasyon","CNA"],["resident","rezidan","CNA"],
  ["vital signs","siy vital","CNA"],["blood pressure","tansyon","CNA"],["pulse","pou","CNA"],["temperature","tanperati","CNA"],
@@ -957,9 +960,9 @@ const views={
   const code=TR[T()].code,all=!!V.all,rows=GL.filter(g=>(all||g[2]===code)&&!soonCodes().includes(g[2]));
   return `<button type="button" class="back bk" data-act="nav" data-v="learn">${esc(U("back"))}</button>
   <section><h1>${esc(U("glossTitle"))}</h1><p class="muted">${esc(U("glossSub"))}</p>
-   <label for="gq" class="eyebrow">${esc(U("search"))}</label><input id="gq" class="search" type="search" placeholder="${esc(U("search"))}" autocomplete="off">
+   <label for="gq" class="eyebrow">${esc(U("search"))}</label><input id="gq" class="search" type="search" placeholder="${esc(U("search"))}" autocomplete="off" value="${esc(V.q||"")}">
    <label class="small"><input type="checkbox" data-act="allTerms" ${all?"checked":""}> ${esc(U("allTerms"))}</label></section>
-  <div class="list" id="gl">${rows.map(g=>`<div class="gl" data-s="${esc((g[0]+' '+LT(g[0],g[1])).toLowerCase())}"><b>${esc(g[0])}</b><span>${esc(LT(g[0],g[1]))}</span><span class="tag">${all?g[2]:""}</span></div>`).join("")}</div>`;
+  <div class="list" id="gl">${rows.map(g=>`<div class="gl" data-s="${esc(fold(g[0]+' '+g[1]+' '+LT(g[0],g[1])))}"><b>${esc(g[0])}</b><span>${esc(LT(g[0],g[1]))}</span><span class="tag">${all?g[2]:""}</span></div>`).join("")}<p class="gl-none" id="glNone" hidden>${esc(U("noTerms"))}</p></div>`;
  },
  switch(){
   return `<button type="button" class="back bk" data-act="nav" data-v="home">${esc(U("back"))}</button>
@@ -1171,7 +1174,7 @@ function render(){
    if(left<=0){clearInterval(timer);finish(true);return}
    if(el){el.textContent=fmt(left);el.classList.toggle("low",left<60000)}},1000);
  }
- if(V.view==="glossary"){const inp=document.getElementById("gq");inp.addEventListener("input",()=>{const v=inp.value.trim().toLowerCase();document.querySelectorAll("#gl .gl").forEach(r=>r.hidden=!!v&&!r.dataset.s.includes(v))})}
+ if(V.view==="glossary"){const inp=document.getElementById("gq");const run=()=>{const v=fold(inp.value.trim());V.q=inp.value;let n=0;document.querySelectorAll("#gl .gl").forEach(r=>{r.hidden=!!v&&!r.dataset.s.includes(v);if(!r.hidden)n++});document.getElementById("glNone").hidden=n>0};inp.addEventListener("input",run);if(inp.value)run()}
  if(V.view==="account"){const d=document.getElementById("ed");d.addEventListener("change",()=>{S.examDate=d.value||null;save()})}
 }
 const H={
@@ -1211,7 +1214,7 @@ const H={
  backFrom:()=>{goBack(()=>go(V.from))},
  guideCheck:v=>{const g=GUIDES.find(x=>x.id===v);if(g.t==="hha"&&T()==="cna"){const ids=g.check.map(i=>"c-"+i).filter(byId);start("practice","cna",null,ids.length?ids:Q.filter(x=>x.t==="cna"&&x.g===g.id).slice(0,5).map(x=>x.id));return}start("practice",g.t,null,g.check)},
  listen:v=>speak(v),
- allTerms:()=>go("glossary",{all:!V.all}),
+ allTerms:()=>go("glossary",{all:!V.all,q:V.q},{replace:true}),
  reset:()=>{if(!confirm(U("resetQ")))return;Q.filter(x=>x.t===T()).forEach(x=>delete S.hist[x.id]);save();render()},
  signOut:()=>{Acct.signOut();render()},
  delAcct:()=>{if(!confirm(U("delQ")))return;/* TODO: call delete-account Edge Function, then sign out */Acct.signOut();S.ent={};save();render()},

@@ -57,5 +57,4 @@ cd android-app && npm run icons # rebuild the Android icon and splash files
 
 - **Premium and sign-in are switched off** for now (`CONFIG={payments:false,accounts:false}` near the top of the script in `index.html`). Everything is free and nothing is locked, on the website and in the app. Google Play requires Google Play Billing for selling digital content in an app, and requires in-app and web account deletion once accounts exist, so turn these on only after billing and real accounts are built.
 - **Create the privacy@paskleapp.com mailbox** in Hostinger. It is the contact on the privacy page and in the listing.
-- **Settle the app name.** The package name `app.lexcellent.paskle` can never change after the first upload.
 - **Test on a real phone** (Back button, Listen, dark mode, offline) with an internal-testing build before production.

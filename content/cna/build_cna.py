@@ -85,3 +85,7 @@ cnt = {}
 for a in area_map.values(): cnt[a] = cnt.get(a, 0) + 1
 print("chapters", len(chapters), "new questions", len(sec_map), "strings", len(fr))
 print("pool per area (exam):", ", ".join(f"{a}={cnt.get(a,0)}({n})" for a, n, _ in AREAS))
+
+# The app loads data/web/*.js, made from the data files: refresh them.
+import subprocess
+subprocess.run(["node", os.path.join(ROOT, "tools", "split_web.js"), ROOT], check=True)

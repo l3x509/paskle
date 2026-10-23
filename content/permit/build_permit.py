@@ -71,3 +71,7 @@ for lang, d in (("fr", fr), ("es", es)):
 
 print("chapters", len(chapters), "questions", len(sec_map), "faq", len(faq), "strings", len(fr))
 print("per chapter:", ", ".join(f"c{c['ch']}={len(c['qs'])}" for c in chapters))
+
+# The app loads data/web/*.js, made from the data files: refresh them.
+import subprocess
+subprocess.run(["node", os.path.join(ROOT, "tools", "split_web.js"), ROOT], check=True)

@@ -349,14 +349,10 @@ body.ob nav.tabs{display:none}
   </div>
 </nav>
 
-<script src="data/hha-a.js"></script>
-<script src="data/hha-b.js"></script>
-<script src="data/hha-c.js"></script>
-<script src="data/hha-d.js"></script>
-<script src="data/hha-map.js"></script>
-<script src="data/cna-a.js"></script>
-<script src="data/ma-cna.js"></script>
-<script src="data/permit-a.js"></script>
+<!-- Guides, terms, FAQ and free questions. The other questions load on demand (data/web/*-more.js). Made by tools/split_web.js. -->
+<script src="data/web/hha.js"></script>
+<script src="data/web/cna.js"></script>
+<script src="data/web/permit.js"></script>
 <script>
 /* ---------- UI strings ---------- */
 const UI={
@@ -713,9 +709,18 @@ const LO=o=>L(o.ht,o.en);
 const CODE=x=>x?(x.abbr?W(x.abbr):x.code):"";
 const codeName=c=>CODE(Object.values(TR).find(x=>x.code===c)||{code:c});
 function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
-function trackStats(t){const qs=Q.filter(x=>x.t===t);let done=0,ok=0,miss=0;qs.forEach(x=>{const h=S.hist[x.id];if(h){done++;if(h.ok)ok++;else miss++}});return{total:qs.length,done,ok,miss,free:qs.filter(x=>x.free).length}}
+function trackStats(t){const qs=Q.filter(x=>x.t===t);let done=0,ok=0,miss=0;qs.forEach(x=>{const h=S.hist[x.id];if(h){done++;if(h.ok)ok++;else miss++}});return{total:Math.max(qs.length,((window.QN||{})[t]||{})._||0),done,ok,miss,free:qs.filter(x=>x.free).length}}
 const lockIcon='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>';
 const spk='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 010 7M18.5 5.5a9 9 0 010 13"/></svg>';
+
+/* ---------- Adding questions from the data files (also used when the rest of an exam's questions arrive later) ---------- */
+const ADDQ={
+ hha:(ch,x,free)=>{const S2=window.HHA_SEC||{};q(x[0],"hha","c"+ch,x[1],free,x[2],x[3],x[4]);const o=Q[Q.length-1];o.g="g-hha-c"+ch;o.s=S2[x[0]]!==undefined?S2[x[0]]:0;return o},
+ cna:(ch,x,free)=>{const M=window.MA_CNA||{map:{}};q(x[0],"cna",M.map[x[0]],x[1],free,x[2],x[3],x[4]);const o=Q[Q.length-1];o.g="g-cna-c"+ch;o.s=(window.CNA_SEC||{})[x[0]]||0;return o},
+ permit:(ch,x,free)=>{q(x[0],"permit","c"+ch,x[1],free,x[2],x[3],x[4]);const o=Q[Q.length-1];o.g="g-permit-c"+ch;o.s=(window.PERMIT_SEC||{})[x[0]]||0;if(x[5])o.sign=x[5];return o}
+};
+/* CNA also uses the HHA questions that match its exam outline, as "c-<id>" */
+function cnaCopy(x){const M=window.MA_CNA;if(!M||!M.map[x.id]||byId("c-"+x.id))return;Q.push(Object.assign({},x,{id:"c-"+x.id,t:"cna",tp:M.map[x.id],from:x.id}))}
 
 /* ---------- HHA: build guides, questions and skill cards from data/hha-*.js ---------- */
 (function(){
@@ -726,11 +731,11 @@ const spk='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-wid
  H.forEach(c=>{
   const tp="c"+c.ch,gid="g-hha-c"+c.ch,full=FREE_CH.includes(c.ch);
   TR.hha.topics[tp]=ob(c.title);
-  const SEC=window.HHA_SEC||{};c.qs.forEach((x,i)=>{q(x[0],"hha",tp,x[1],full||i===0?1:0,x[2],x[3],x[4]);const o=Q[Q.length-1];o.g=gid;o.s=SEC[x[0]]!==undefined?SEC[x[0]]:0});
+  c.qs.forEach((x,i)=>ADDQ.hha(c.ch,x,full||i===0?1:0));
   GUIDES.push({id:gid,t:"hha",n:c.ch,free:full?1:0,observed:!!c.observed,title:ob(c.title),
    blueprint:{ht:"Sijè obligatwa #"+c.ch+" nan fòmasyon federal ed swen a domisil (42 CFR 484.80"+c.cfr+")."+(c.observed?" Enfimyè a dwe gade w fè konpetans sa yo.":""),
               en:"Required subject #"+c.ch+" in federal home health aide training (42 CFR 484.80"+c.cfr+")."+(c.observed?" A nurse must watch you perform these skills.":"")},
-   check:c.qs.slice(0,5).map(x=>x[0]),src:c.src,
+   check:c.check||c.qs.slice(0,5).map(x=>x[0]),src:c.src,
    sections:c.sections.map(s=>({h:ob(s.h),src:s.src,b:s.b})),terms:c.terms});
   (c.skillRefs||[]).forEach(r=>{if(r==="handwashing"){const w=LS.find(l=>l.t==="cna"&&l.title.en.startsWith("Handwashing"));if(w)LS.push(Object.assign({},w,{t:"hha",free:1,g:gid}))}});
   (c.skills||[]).forEach((k,i)=>LS.push({t:"hha",free:full||(i===0&&c.ch===6)?1:0,g:gid,title:ob(k.title),steps:k.steps,note:k.note}));
@@ -748,8 +753,8 @@ const spk='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-wid
  const CS=window.CNA_SEC||{};
  (window.CNA||[]).slice().sort((a,b)=>a.ch-b.ch).forEach(c=>{
   const gid="g-cna-c"+c.ch;
-  c.qs.forEach((x,i)=>{q(x[0],"cna",M.map[x[0]],x[1],i===0?1:0,x[2],x[3],x[4]);const o=Q[Q.length-1];o.g=gid;o.s=CS[x[0]]||0});
-  GUIDES.push({id:gid,t:"cna",n:c.ch,free:0,title:ob(c.title),blueprint:ob(c.bp),check:c.qs.slice(0,5).map(x=>x[0]),src:c.src,
+  c.qs.forEach((x,i)=>ADDQ.cna(c.ch,x,i===0?1:0));
+  GUIDES.push({id:gid,t:"cna",n:c.ch,free:0,title:ob(c.title),blueprint:ob(c.bp),check:c.check||c.qs.slice(0,5).map(x=>x[0]),src:c.src,
    sections:c.sections.map(s=>({h:ob(s.h),src:s.src,b:s.b})),terms:c.terms});
   c.terms.forEach(t=>{if(!GL.some(g=>g[0].toLowerCase()===t[0].toLowerCase()))GL.push([t[0],t[1],"CNA"])});
  });
@@ -757,7 +762,7 @@ const spk='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-wid
  const LEGACY={cna1:["g-cna-inf",1],cna2:["g-cna-inf",4],cna3:["g-hha-c10",4],cna4:["g-cna-c5",3],cna5:["g-hha-c8",5],cna6:["g-hha-c9",8],cna7:["g-hha-c9",7],
   cna8:["g-hha-c3",1],cna9:["g-hha-c3",2],cna10:["g-hha-c12",2],cna11:["g-hha-c11",3],cna12:["g-hha-c1",3],cna13:["g-hha-c2",3]};
  Q.forEach(x=>{const m=LEGACY[x.id];if(m&&GUIDES.some(g=>g.id===m[0])){x.g=m[0];x.s=m[1]}});
- Q.filter(x=>x.t==="hha"&&M.map[x.id]).forEach(x=>Q.push(Object.assign({},x,{id:"c-"+x.id,t:"cna",tp:M.map[x.id],from:x.id})));
+ Q.filter(x=>x.t==="hha").forEach(cnaCopy);
 })();
 
 /* ---------- Permit: guide chapters, questions and FAQ from data/permit-a.js (Massachusetts Driver's Manual, April 2026) ---------- */
@@ -768,13 +773,28 @@ const spk='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-wid
  P.forEach(c=>{
   const tp="c"+c.ch,gid="g-permit-c"+c.ch,full=FREE_CH.includes(c.ch);
   TR.permit.topics[tp]=ob(c.title);
-  c.qs.forEach((x,i)=>{q(x[0],"permit",tp,x[1],full||i===0?1:0,x[2],x[3],x[4]);const o=Q[Q.length-1];o.g=gid;o.s=PS[x[0]]||0;if(x[5])o.sign=x[5]});
-  GUIDES.push({id:gid,t:"permit",n:c.ch,free:full?1:0,title:ob(c.title),blueprint:ob(c.bp),check:c.qs.slice(0,5).map(x=>x[0]),src:c.src,
+  c.qs.forEach((x,i)=>ADDQ.permit(c.ch,x,full||i===0?1:0));
+  GUIDES.push({id:gid,t:"permit",n:c.ch,free:full?1:0,title:ob(c.title),blueprint:ob(c.bp),check:c.check||c.qs.slice(0,5).map(x=>x[0]),src:c.src,
    sections:c.sections.map(s=>({h:ob(s.h),src:s.src,pg:s.pg,sign:s.sign,b:s.b})),terms:c.terms});
   c.terms.forEach(t=>{if(!GL.some(g=>g[0].toLowerCase()===t[0].toLowerCase()&&g[2]==="PÈMI"))GL.push([t[0],t[1],"PÈMI"])});
  });
 })();
 const FAQS={hha:()=>window.HHA_FAQ,permit:()=>window.PERMIT_FAQ};
+
+/* ---------- The rest of an exam's questions (data/web/<exam>-more.js) load only for people who have access to them.
+   CNA also uses the HHA questions. When Premium is switched off, everyone has access. ---------- */
+const MORE_OF={hha:["hha"],cna:["hha","cna"],permit:["permit"]},moreDone={},moreTried={},moreJob={};
+function mergeMore(k){const m=(window.MORE||{})[k];if(!m)return;
+ Object.keys(m).forEach(ch=>m[ch].forEach(x=>{if(byId(x[0]))return;const o=ADDQ[k](+ch,x,0);if(k==="hha")cnaCopy(o)}))}
+function loadScript(src){return new Promise(ok=>{const e=document.createElement("script");e.src=src;e.onload=()=>ok(true);e.onerror=()=>{e.remove();ok(false)};document.head.appendChild(e)})}
+const moreReady=t=>(MORE_OF[t]||[]).every(k=>moreTried[k]);
+function loadMore(t){
+ return Promise.all((MORE_OF[t]||[]).filter(k=>!moreDone[k]).map(k=>moreJob[k]=moreJob[k]||
+  ((window.MORE||{})[k]?Promise.resolve(true):loadScript("data/web/"+k+"-more.js")).then(ok=>{
+   moreTried[k]=1;moreJob[k]=null;if(ok){mergeMore(k);moreDone[k]=1}})));  /* offline and never loaded: keep the free questions, try again later */
+}
+/* Get the current exam's questions if the person has access, then redraw (never in the middle of a quiz). */
+function wantMore(t){t=t||T();if(!t||!hasPrem(t)||(MORE_OF[t]||[]).every(k=>moreDone[k]))return;loadMore(t).then(()=>{if(!["quiz","result"].includes(V.view))render()})}
 const faqOf=t=>FAQS[t]&&FAQS[t]()||null;
 /* Road signs drawn to MUTCD shapes and colors (no text that gives the answer away beyond the sign's own legend). */
 const SIGN={
@@ -878,7 +898,7 @@ const Acct={
 };
 const T=()=>S.track&&TR[S.track]&&!TR[S.track].soon?S.track:null;
 function daysLeft(){if(!S.examDate)return null;return Math.round((new Date(S.examDate+"T00:00:00")-today0())/864e5)}
-function topicStats(t,tp){const qs=Q.filter(x=>x.t===t&&x.tp===tp);let ok=0,done=0;qs.forEach(x=>{const h=S.hist[x.id];if(h){done++;if(h.ok)ok++}});return{total:qs.length,ok,done,avail:qs.filter(avail).length}}
+function topicStats(t,tp){const qs=Q.filter(x=>x.t===t&&x.tp===tp);let ok=0,done=0;qs.forEach(x=>{const h=S.hist[x.id];if(h){done++;if(h.ok)ok++}});return{total:Math.max(qs.length,((window.QN||{})[t]||{})[tp]||0),ok,done,avail:qs.filter(avail).length}}
 function nextGuide(t){const gs=GUIDES.filter(g=>g.t===t).sort((a,b)=>a.n-b.n);return gs.find(g=>!g.check.every(id=>S.hist[id]&&S.hist[id].ok))||null}
 const ic={home:'<path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/>',learn:'<path d="M4 5a2 2 0 012-2h13v16H6a2 2 0 00-2 2z"/><path d="M4 21V5"/><path d="M9 8h6M9 12h6"/>',
  practice:'<path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h9"/>',account:'<circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/>',
@@ -1110,6 +1130,7 @@ Object.assign(views,{
 /* ---------- Sessions ---------- */
 function fmt(ms){ms=Math.max(0,ms);const s=Math.ceil(ms/1000);return Math.floor(s/60)+":"+String(s%60).padStart(2,"0")}
 function start(mode,t,tp,ids){
+ if(hasPrem(t)&&!moreReady(t)){loadMore(t).then(()=>start(mode,t,tp,ids));return}
  const origin=["quiz","result"].includes(V.view)&&sess?sess.origin:Object.assign({},V);
  let pool=Q.filter(x=>x.t===t&&avail(x));
  if(ids)pool=ids.map(byId).filter(x=>x&&avail(x));
@@ -1203,10 +1224,10 @@ const H={
  nav:v=>go(v),
  obStep:v=>go("onboard",{step:+v},{replace:true}),
  obLang:v=>{S.lang=v;save();go("onboard",{step:1},{replace:true});needLang(v,render)},
- obExam:v=>{if(!TR[v]||TR[v].soon)return;S.track=v;save();go("onboard",{step:2},{replace:true})},
+ obExam:v=>{if(!TR[v]||TR[v].soon)return;S.track=v;save();go("onboard",{step:2},{replace:true});wantMore(v)},
  obDone:()=>{const d=document.getElementById("obd").value;S.examDate=d||null;save();navDepth=0;go("home",null,{replace:true})},
  obSkip:()=>{S.examDate=null;save();navDepth=0;go("home",null,{replace:true})},
- setTrack:v=>{if(!TR[v]||TR[v].soon)return;S.track=v;save();go("home")},
+ setTrack:v=>{if(!TR[v]||TR[v].soon)return;S.track=v;save();go("home");wantMore(v)},
  quick:()=>start("quick",T()),
  practice:v=>start("practice",T(),v||null),
  exam:()=>start("exam",T()),
@@ -1229,7 +1250,7 @@ const H={
  google:()=>{Acct.signInGoogle();H.authBack()},
  emailIn:()=>{const e=document.getElementById("em"),v=e.value.trim();if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v)){e.focus();e.setAttribute("aria-invalid","true");return}Acct.signInEmail(v);H.authBack()},
  authBack:()=>{const n=V.next;if(n&&Acct.user()){go(n.view,n)}else go(n?n.view:"account",n||{})},
- buy:v=>{if(!CONFIG.payments)return;if(!Acct.user()){go("auth",{why:1,next:{view:"upgrade"}});return}Acct.buy(v,T());render()}
+ buy:v=>{if(!CONFIG.payments)return;if(!Acct.user()){go("auth",{why:1,next:{view:"upgrade"}});return}Acct.buy(v,T());render();wantMore()}
 };
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!document.getElementById("langMenu").hidden)H.langClose()});
 document.addEventListener("click",e=>{const b=e.target.closest("[data-act]");if(!b)return;
@@ -1239,6 +1260,7 @@ document.addEventListener("change",e=>{const c=e.target.closest("[data-chg]");if
 render();
 try{history.replaceState({V,d:0},"")}catch(e){}
 needLang(S.lang,render);
+wantMore();
 if(NATIVE){
  /* Android Back: close the language menu, else step back, else go Home, and exit only from Home. */
  if(NATIVE_APP)NATIVE_APP.addListener("backButton",()=>{
@@ -1254,7 +1276,7 @@ if(NATIVE){
   bars.setStyle({style:matchMedia("(prefers-color-scheme: dark)").matches?"DARK":"LIGHT",bar:"NavigationBar"}).catch(()=>{})};
  setBars();matchMedia("(prefers-color-scheme: dark)").addEventListener("change",setBars);
 }
-window.addEventListener("online",render);window.addEventListener("offline",render);
+window.addEventListener("online",()=>{render();wantMore()});window.addEventListener("offline",render);
 /* Offline support: works when the app is served over http(s), e.g. GitHub Pages. Fails quietly where service workers are not allowed. */
 /* Not inside the Android app: it already has every file on the phone, and a cache there could show last version's files after an update. */
 if(!NATIVE&&"serviceWorker" in navigator&&/^https?:$/.test(location.protocol)){try{navigator.serviceWorker.register("sw.js").catch(()=>{})}catch(e){}}

@@ -2570,7 +2570,7 @@
 "Shout so she can hear": "Gritar para que oiga",
 "Explain what you are doing and talk to her as if she understands": "Explicarle lo que hace y hablarle como si entendiera",
 "Hearing is the last sense to fail. Explain each task and be careful what is said nearby.": "El oído es el último sentido que se pierde. Explique cada tarea y tenga cuidado con lo que se dice cerca de ella.",
-"hearing": "oído",
+"hearing": "audiencia",
 "A dying resident's mouth and lips are dry. What do you do?": "La boca y los labios de un residente que está muriendo están secos. ¿Qué hace?",
 "Pour water into the mouth": "Echarle agua en la boca",
 "Use a moist swab and lip balm often": "Usar con frecuencia un hisopo húmedo y bálsamo para labios",

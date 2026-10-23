@@ -2570,7 +2570,7 @@
 "Shout so she can hear": "Crier pour qu'elle entende",
 "Explain what you are doing and talk to her as if she understands": "Expliquer ce que vous faites et lui parler comme si elle comprenait",
 "Hearing is the last sense to fail. Explain each task and be careful what is said nearby.": "L'ouïe est le dernier sens à disparaître. Expliquez chaque soin et faites attention à ce qui se dit près d'elle.",
-"hearing": "ouïe",
+"hearing": "audience",
 "A dying resident's mouth and lips are dry. What do you do?": "La bouche et les lèvres d'un résident en fin de vie sont sèches. Que faites-vous ?",
 "Pour water into the mouth": "Verser de l'eau dans sa bouche",
 "Use a moist swab and lip balm often": "Utiliser souvent un écouvillon humide et du baume à lèvres",

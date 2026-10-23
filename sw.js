@@ -1,11 +1,14 @@
 /* Paskle service worker: makes practice work offline.
-   App files and fonts are saved on install; language files are saved the first time they load.
+   App files, fonts and free questions are saved on install; the other questions (data/web/*-more.js)
+   and the language files are saved the first time they load.
    Bump VERSION whenever any file changes, so phones pick up the new version. */
-const VERSION = "paskle-2026-10-23c";
+const VERSION = "paskle-2026-10-24a";
 const CORE = [
   "./", "index.html", "manifest.webmanifest",
-  "data/hha-a.js", "data/hha-b.js", "data/hha-c.js", "data/hha-d.js", "data/hha-map.js",
-  "data/cna-a.js", "data/ma-cna.js", "data/permit-a.js",
+  "data/web/hha.js", "data/web/cna.js", "data/web/permit.js",
+  // While Premium is switched off, everyone gets every question, so save them all for offline use.
+  // When Premium goes live, remove these three lines: buyers' copies are saved the first time they load.
+  "data/web/hha-more.js", "data/web/cna-more.js", "data/web/permit-more.js",
   "icons/icon.svg", "icons/icon-192.png", "icons/icon-512.png", "icons/icon-maskable-512.png",
   "fonts/atkinson-hyperlegible-latin-400-normal.woff2", "fonts/atkinson-hyperlegible-latin-700-normal.woff2", "fonts/source-serif-4-latin-opsz-normal.woff2"
 ];

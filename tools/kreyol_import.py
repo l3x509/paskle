@@ -45,7 +45,7 @@ def main(path, dry):
     for f, t in texts.items():
         open(os.path.join(ROOT, f), "w", encoding="utf-8").write(t)
     for cmd in (["python3", "content/cna/build_cna.py"], ["python3", "content/permit/build_permit.py"],
-                ["node", "tools/i18n-check.js"]):
+                ["node", "tools/split_web.js"], ["node", "tools/i18n-check.js"]):
         r = subprocess.run(cmd, cwd=ROOT, capture_output=True, text=True)
         print("$", " ".join(cmd), "->", "ok" if r.returncode == 0 else "FAILED");
         if r.returncode: print(r.stdout[-1500:], r.stderr[-1500:])

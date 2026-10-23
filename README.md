@@ -11,6 +11,7 @@ Live site: [paskleapp.com](https://paskleapp.com)
   - HHA: 14 federal subjects, `data/hha-*.js`.
   - CNA: Massachusetts written exam outline, `data/cna-a.js` and `data/ma-cna.js`.
   - Permit: 8 chapters, 181 questions and a 62-question FAQ from the RMV Driver's Manual (April 2026), `data/permit-a.js`.
+- **What the app loads:** `data/web/<exam>.js` (guides, terms, FAQ, free questions) right away, and `data/web/<exam>-more.js` (the other questions) only for people with access. `tools/split_web.js` makes them from the files above; run it after editing `data/hha-*.js` by hand.
 - **French and Spanish:** `data/i18n-fr.js` and `data/i18n-es.js`, keyed by the English text. They load only when someone picks that language.
 - **Content sources (edit these, not the data files):**
   - `content/cna/cna_src.py`: CNA chapters, in four languages side by side.
@@ -25,6 +26,7 @@ Run from the repo root:
 ```
 python3 content/cna/build_cna.py          # writes data/cna-a.js, data/ma-cna.js, merges FR/ES
 python3 content/permit/build_permit.py    # writes data/permit-a.js, merges FR/ES
+node tools/split_web.js                   # writes data/web/: what the app loads (both builds above run it too)
 node tools/check-dupes.js                 # flags questions that test the same fact
 node tools/i18n-check.js                  # lists missing or stale French/Spanish strings
 ```

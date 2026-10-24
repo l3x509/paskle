@@ -2,7 +2,7 @@
    App files, fonts and free questions are saved on install; the other questions (data/web/*-more.js)
    and the language files are saved the first time they load.
    Bump VERSION whenever any file changes, so phones pick up the new version. */
-const VERSION = "paskle-2026-10-24b";
+const VERSION = "paskle-2026-10-24c";
 const CORE = [
   "./", "index.html", "manifest.webmanifest",
   "data/web/hha.js", "data/web/cna.js", "data/web/permit.js",

@@ -31,7 +31,7 @@ node tools/check-dupes.js                 # flags questions that test the same f
 node tools/i18n-check.js                  # lists missing or stale French/Spanish strings
 ```
 
-After any change, bump `VERSION` in `sw.js` so installed copies update. The version shown in Account is `APP_VERSION` in `index.html`; keep it equal to `versionName` in the Android build.
+After any change, bump `VERSION` in `sw.js` so installed copies update. The version shown in Account is `APP_VERSION` in `index.html`; the Android build reads it as its versionName and sets versionCode by itself.
 
 ## Editing the Kreyòl text
 

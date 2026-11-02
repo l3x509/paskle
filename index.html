@@ -876,7 +876,7 @@ Object.assign(UI.en,{estCover:"Practice {k} more topics to see your estimated sc
    accounts:false = no sign-in screen or account card; progress stays on the device.
    Turn each on only when the real service is connected (Play Billing / Stripe; Supabase Auth). */
 const CONFIG={payments:false,accounts:false};
-const APP_VERSION="1.0.1";  /* keep equal to versionName in android-app/android/app/build.gradle */
+const APP_VERSION="1.0.2";  /* the Android build reads this as its versionName */
 /* Running inside the Android app? The app build adds vendor/capacitor.js, which registers the native plugins. */
 const NATIVE=!!(window.Capacitor&&typeof window.Capacitor.isNativePlatform==="function"&&window.Capacitor.isNativePlatform());
 const capPlugin=n=>{try{return NATIVE&&window.capacitorExports?window.capacitorExports.registerPlugin(n):null}catch(e){return null}};

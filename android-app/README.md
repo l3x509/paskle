@@ -35,7 +35,7 @@ Let Play App Signing manage the app signing key (the default). Your keystore the
 2. If people should see a new version number, change `APP_VERSION` in `index.html` (for example "1.0.2" → "1.0.3"). It shows in Account and becomes the app's versionName.
 3. `git pull`, then `npm run sync` in this folder, then build a new signed bundle with the same key and upload it.
 
-You never edit `versionCode`: the build sets it to the date and hour it was built (YYMMDDHH, for example 26110214 = 2 Nov 2026, 2 pm), so each bundle is higher than the last. Don't upload two bundles built in the same hour.
+You never edit `versionCode`: the build sets it to the date and time it was built, as Y MM DD HH mm with Y = year minus 2025 (for example 111022130 = 2 Nov 2026, 9:30 pm), so each bundle built a minute or more later is higher.
 
 Upload key: Google Play expects bundles for Paskle signed with the HaitiQ upload key (alias `haitiq`).
 

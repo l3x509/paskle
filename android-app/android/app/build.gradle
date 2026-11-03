@@ -2,14 +2,16 @@ apply plugin: 'com.android.application'
 
 // Version numbers, set automatically so they never need editing here:
 // - versionName (what people see) comes from APP_VERSION in the repo's index.html.
-// - versionCode (what Google Play checks) is the build's date and hour, as YYMMDDHH:
-//   a build on 2 Nov 2026 at 2 pm gets 26110214. Each build is higher than the last,
-//   as long as two uploads are not built in the same hour.
+// - versionCode (what Google Play checks) is the build's date and time, as Y MM DD HH mm,
+//   where Y is the year minus 2025 (1 = 2026, 2 = 2027...). A build on 2 Nov 2026 at 9:30 pm
+//   gets 111022130. Google Play allows at most 2100000000, so a full YYMMDDHHmm (2611022130)
+//   would be too big; this form works until 2045 and is higher for every build a minute later.
 def appVersionName = {
     def m = (new File(rootDir, "../../index.html").text =~ /APP_VERSION="([^"]+)"/)
     return m.find() ? m.group(1) : "1.0"
 }()
-def autoVersionCode = java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("yyMMddHH")).toInteger()
+def now = java.time.LocalDateTime.now()
+def autoVersionCode = ((now.year - 2025).toString() + now.format(java.time.format.DateTimeFormatter.ofPattern("MMddHHmm"))).toInteger()
 
 android {
     namespace = "app.lexcellent.paskle"

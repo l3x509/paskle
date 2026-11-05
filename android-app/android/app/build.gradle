@@ -2,16 +2,20 @@ apply plugin: 'com.android.application'
 
 // Version numbers, set automatically so they never need editing here:
 // - versionName (what people see) comes from APP_VERSION in the repo's index.html.
-// - versionCode (what Google Play checks) is the build's date and time, as Y MM DD HH mm,
-//   where Y is the year minus 2025 (1 = 2026, 2 = 2027...). A build on 2 Nov 2026 at 9:30 pm
-//   gets 111022130. Google Play allows at most 2100000000, so a full YYMMDDHHmm (2611022130)
-//   would be too big; this form works until 2045 and is higher for every build a minute later.
+// - versionCode (what Google Play checks) goes up by 1 with every commit in this repo:
+//   it is 111042208 + the number of commits. The first build after this change is 111042230,
+//   one more than the last bundle uploaded (111042229), and each later release is a little higher.
 def appVersionName = {
     def m = (new File(rootDir, "../../index.html").text =~ /APP_VERSION="([^"]+)"/)
     return m.find() ? m.group(1) : "1.0"
 }()
-def now = java.time.LocalDateTime.now()
-def autoVersionCode = ((now.year - 2025).toString() + now.format(java.time.format.DateTimeFormatter.ofPattern("MMddHHmm"))).toInteger()
+def commitCount = {
+    def p = ["git", "rev-list", "--count", "HEAD"].execute(null, rootDir)
+    def out = p.text.trim(); p.waitFor()
+    if (p.exitValue() != 0 || !out.isInteger()) throw new GradleException("Could not count git commits for versionCode. Is git installed, and is this a git clone?")
+    return out.toInteger()
+}()
+def autoVersionCode = 111042208 + commitCount
 
 android {
     namespace = "app.lexcellent.paskle"
